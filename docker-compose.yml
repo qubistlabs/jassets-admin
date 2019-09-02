@@ -1,0 +1,8 @@
+version: '3.5'
+services:
+  jassets-admin:
+    image: jassets-admin
+    build: .
+    restart: always
+    ports:
+      - "8001:8000"

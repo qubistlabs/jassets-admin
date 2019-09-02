@@ -78,11 +78,6 @@ class TradingPair(JAssetsModel):
         unique_together = ('base_asset_obj', 'quote_asset_obj', 'exchange_obj')
 
     def __str__(self):
-        return f'{self.exchange} - {self.symbol}'
-
-    def __repr__(self):
-        return f'<TradingPair {self.id}:{self.exchange}:{self.symbol}>'
-
-
+        return f'{self.symbol}'
 
 

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from os import getenv
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -19,7 +20,7 @@ SECRET_KEY = '2t=j)t6-7lknd_xa_gs3@56nt4mi_f7%yy*24q*owc*5sfm#ne'
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -62,6 +63,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'jassets_admin.wsgi.application'
 
+POSTGRES_HOST = getenv('POSTGRES_HOST', '0.0.0.0')
+POSTGRES_PORT = int(getenv('POSTGRES_PORT', '9432'))
+POSTGRES_USER = getenv('POSTGRES_USER', 'jassets')
+POSTGRES_PASSWORD = getenv('POSTGRES_PASSWORD')
+POSTGRES_DB = getenv('POSTGRES_DB', 'jassets')
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -69,11 +76,11 @@ DATABASES = {
     },
     'jassets': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'jassets',
-        'USER': 'jassets',
-        'PASSWORD': '',
-        'HOST': '0.0.0.0',
-        'PORT': '9432',
+        'NAME': POSTGRES_DB,
+        'USER': POSTGRES_USER,
+        'PASSWORD': POSTGRES_PASSWORD,
+        'HOST': POSTGRES_HOST,
+        'PORT': POSTGRES_PORT,
     }
 }
 
