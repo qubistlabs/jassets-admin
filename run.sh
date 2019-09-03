@@ -7,10 +7,9 @@ dockerize -wait tcp://${POSTGRES_HOST:-jassets-postgres}:${POSTGRES_PORT:-5432}
 
 if [ "${RUNMODE}" = "test" ]; then
     pytest "${@:5}"
-if [ "${RUNMODE}" = "init" ]; then
+else
     python manage.py migrate
     python manage.py shell < init_db.py
-else
     python manage.py runserver 0.0.0.0:8000 --noreload
 fi
 
