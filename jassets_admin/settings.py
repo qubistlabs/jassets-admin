@@ -16,7 +16,7 @@ from os import getenv
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '2t=j)t6-7lknd_xa_gs3@56nt4mi_f7%yy*24q*owc*5sfm#ne'
+SECRET_KEY = getenv('SECRET_KEY')
 
 DEBUG = True
 
@@ -47,8 +47,7 @@ ROOT_URLCONF = 'jassets_admin.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

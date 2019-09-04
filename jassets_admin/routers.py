@@ -1,6 +1,9 @@
 
 class JAssetsRouter:
-
+    """
+    Routing queries to jassets models to jassets DB
+    and another queries to inner DB
+    """
     def get_db(self, model, **hints):
         if model._meta.app_label == 'jassets_admin':
             return 'jassets'

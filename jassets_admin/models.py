@@ -15,7 +15,7 @@ class Platform(JAssetsModel):
     name = models.CharField(max_length=30)
     symbol = models.CharField(max_length=10, unique=True)
     main_asset_obj = models.ForeignKey(
-        "Asset", db_column='main_asset', 
+        "Asset", db_column='main_asset',
         null=True, on_delete=models.SET_NULL,
         related_name='main_for_platform', to_field='uuid')
 
@@ -64,10 +64,10 @@ class Exchange(JAssetsModel):
 class TradingPair(JAssetsModel):
     id = models.IntegerField(primary_key=True)
     base_asset_obj = models.ForeignKey(
-        "Asset", db_column='base_asset', null=True, on_delete=models.SET_NULL, 
+        "Asset", db_column='base_asset', null=True, on_delete=models.SET_NULL,
         related_name='base_for_pair')
     quote_asset_obj = models.ForeignKey(
-        "Asset", db_column='quote_asset', null=True, on_delete=models.SET_NULL, 
+        "Asset", db_column='quote_asset', null=True, on_delete=models.SET_NULL,
         related_name='quote_for_pair')
     exchange_obj = models.ForeignKey(
         "Exchange", db_column='exchange', on_delete=models.CASCADE)
@@ -79,5 +79,3 @@ class TradingPair(JAssetsModel):
 
     def __str__(self):
         return f'{self.symbol}'
-
-

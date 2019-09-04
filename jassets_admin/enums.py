@@ -2,10 +2,10 @@ from enum import Enum
 
 
 class AssetType(Enum):
-    FIAT = 'fiat'
-    COIN = 'coin'
-    TOKEN = 'token'
+    FIAT = 'FIAT'
+    COIN = 'COIN'
+    TOKEN = 'TOKEN'
 
     @classmethod
     def choices(cls):
-        return tuple((i.name, i.name) for i in cls)
+        return tuple((i.name, i.value) for i in cls)
