@@ -16,4 +16,6 @@ builder(
                         ],
                 ],
         ],
+        slackTargetNames: '#dev-mobile',
+        slackNotificationBranchFilter: '.*',
 )
