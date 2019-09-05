@@ -16,6 +16,6 @@ builder(
                         ],
                 ],
         ],
-        slackTargetNames: '#dev-backend',
+        slackTargetNames: '#radio-jticker',
         slackNotificationBranchFilter: '.*',
 )
