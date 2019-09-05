@@ -12,7 +12,7 @@ builder(
                         command: [
                                 'pip install --no-cache-dir --src=/src/ -r requirements.txt',
                                 'mkdir -p /junit-reports',
-                                'py.test --pylama --pylama-only --junit-xml /junit-reports/pylama-report.xml',
+                                'py.test --pylama --junit-xml /junit-reports/pylama-report.xml',
                                 'echo "Validate swagger spec..."',
                         ],
                 ],
