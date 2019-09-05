@@ -1,6 +1,6 @@
 builder(
         jUnitReportsPath: 'junit-reports',
-        coverageReportsPath: 'coverage-reports',
+//         coverageReportsPath: 'coverage-reports',
         buildTasks: [
                 [
                         name: "Linters",
@@ -13,7 +13,6 @@ builder(
                                 'pip install --no-cache-dir --src=/src/ -r requirements.txt',
                                 'mkdir -p /junit-reports',
                                 'py.test --pylama --junit-xml /junit-reports/pylama-report.xml',
-                                'echo "Validate swagger spec..."',
                         ],
                 ],
         ],
