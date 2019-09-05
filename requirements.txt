@@ -1,2 +1,17 @@
 django == 2.2.4
 psycopg2 == 2.8.3
+
+
+pytest
+pytest-cov
+pytest-watch
+pytest-asyncio
+pytest-aiohttp
+eradicate
+
+asynctest
+
+coverage
+
+pylama
+mypy
