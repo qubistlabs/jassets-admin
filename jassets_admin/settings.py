@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'jassets_admin',
+    'validation',
 ]
 
 MIDDLEWARE = [
@@ -92,3 +93,6 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+
+KAFKA_HOST = getenv('KAFKA_HOST', '0.0.0.0')
+KAFKA_PORT = getenv('KAFKA_PORT', '9092')

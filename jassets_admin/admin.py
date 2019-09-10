@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from validation.api import request_asset_validation
 from .models import TradingPair, Platform, Asset, Exchange
 
 
@@ -57,6 +58,7 @@ class AssetAdmin(BaseModelAdmin):
         'created',
         'updated',
     )
+    actions = (request_asset_validation, )
 
 
 class ExchangeAdmin(BaseModelAdmin):
