@@ -1,0 +1,15 @@
+-r requirements.txt
+
+pytest
+pytest-cov
+pytest-watch
+pytest-asyncio
+pytest-aiohttp
+eradicate
+
+asynctest
+
+coverage
+
+pylama
+mypy

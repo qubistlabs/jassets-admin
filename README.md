@@ -16,3 +16,6 @@ Available environment variables:
 - `POSTGRES_USER` (default `jassets`) - DB server user name
 - `POSTGRES_PASSWORD` (default is empty) - DB server password
 - `POSTGRES_DB` (default `jassets`) - DB name
+- `ADMIN_LOGIN` (default `admin`) - super user name
+- `ADMIN_PASSWORD` (default `admin`) - super user password
+- `ADMIN_EMAIL` (default is empty) - super user email address
