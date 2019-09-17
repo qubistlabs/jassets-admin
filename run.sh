@@ -10,6 +10,6 @@ if [ "${RUNMODE}" = "test" ]; then
 else
     python manage.py migrate
     python manage.py shell < init_db.py
-    python manage.py runserver 0.0.0.0:8000 --noreload
+    python manage.py runserver "$LISTEN_HOST":"$LISTEN_PORT" --noreload
 fi
 
