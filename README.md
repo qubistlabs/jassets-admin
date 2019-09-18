@@ -8,7 +8,7 @@ Django-based UI for jassets management
 UI will be available at `localhost:8001` by default
 
 ## Configuration
-Available environment variables:
+Available environment variables (all of them are required, especially if there is no default value) :
 
 - `SECRET_KEY` - django setting for making hashes
 - `POSTGRES_HOST` (default `0.0.0.0`) - DB server host address
@@ -19,3 +19,4 @@ Available environment variables:
 - `ADMIN_LOGIN` (default `admin`) - super user name
 - `ADMIN_PASSWORD` (default `admin`) - super user password
 - `ADMIN_EMAIL` (default is empty) - super user email address
+- `ALLOWED_HOSTS` (default is `["*"]`) - list of allowed hosts. must be a json parsable string

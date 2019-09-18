@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/2.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
-
+import json
 import os
 from os import getenv
 
@@ -20,7 +20,7 @@ SECRET_KEY = getenv('SECRET_KEY')
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = json.loads(getenv('ALLOWED_HOSTS', '["*"]'))
 
 INSTALLED_APPS = [
     'django.contrib.admin',
