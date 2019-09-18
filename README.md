@@ -14,15 +14,15 @@ Available environment variables (all of them are required, especially if there i
 - `ALLOWED_HOSTS` (default is `["*"]`) - list of allowed hosts. must be a json parsable string
 
 - `POSTGRES_HOST` (default `0.0.0.0`) - DB server host address
-- `POSTGRES_PORT` (default `9543`) - DB server port
-- `POSTGRES_USER` (default `jassets`) - DB server user name
+- `POSTGRES_PORT` (default `5432`) - DB server port
+- `POSTGRES_USER` (default `postgres`) - DB server user name
 - `POSTGRES_PASSWORD` (default is empty) - DB server password
 - `POSTGRES_DB` (default `jassets`) - DB name
 
 - `ADMIN_LOGIN` (default `admin`) - super user name
-- `ADMIN_PASSWORD` (default `admin`) - super user password
+- `ADMIN_PASSWORD` (required) - super user password
 - `ADMIN_EMAIL` (default is empty) - super user email address
 
 - `LISTEN_HOST` - hostname to start server by runserver command
-- `LISTEN_PORT` port to start server by runserver command
+- `LISTEN_PORT` (default `8080`) port to start server by runserver command
 
