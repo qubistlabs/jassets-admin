@@ -1,10 +1,24 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 
+from .exceptions import ShowWarning, ShowMessage, ShowError
+from .admin_actions import get_validation_actions
 from .models import TradingPair, Platform, Asset, Exchange
 
 
 class BaseModelAdmin(admin.ModelAdmin):
     list_per_page = 25
+
+    def response_action(self, request, queryset):
+        result = None
+        try:
+            result = super().response_action(request, queryset)
+        except ShowWarning as warning:
+            messages.warning(request, warning)
+        except ShowMessage as message:
+            messages.info(request, message)
+        except ShowError as message:
+            messages.error(request, message)
+        return result
 
 
 class PlatformAdmin(BaseModelAdmin):
@@ -32,9 +46,9 @@ class AssetAdmin(BaseModelAdmin):
         'id',
         'uuid',
         'name',
-        'description',
         'platform_obj',
 
+        'validation_status',
         'symbol',
         'type',
         'is_active',
@@ -49,7 +63,8 @@ class AssetAdmin(BaseModelAdmin):
     )
     search_fields = (
         'name',
-        'symbol',)
+        'symbol',
+    )
     list_filter = (
         'platform_obj',
         'type',
@@ -57,6 +72,7 @@ class AssetAdmin(BaseModelAdmin):
         'created',
         'updated',
     )
+    actions = list(get_validation_actions())
 
 
 class ExchangeAdmin(BaseModelAdmin):

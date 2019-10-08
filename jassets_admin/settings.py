@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'jassets_admin',
+    'jassets_admin.validation',
 ]
 
 MIDDLEWARE = [
@@ -92,3 +93,6 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+
+VALIDATOR_URL = getenv('VALIDATOR_URL')
+VALIDATION_TIMEOUT = getenv('VALIDATION_TIMEOUT', 1)
