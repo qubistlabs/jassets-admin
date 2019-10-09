@@ -37,9 +37,9 @@ class BaseAsset(JAssetsModel):
     symbol = models.CharField(max_length=30, unique=True)
     type = models.CharField(max_length=50, choices=AssetType.choices())
     is_active = models.BooleanField(default=True)
-    address = models.CharField(max_length=42, unique=True)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now_add=True)
+    address = models.CharField(max_length=42, unique=True, null=True)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    updated = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
         return f'{self.type} - {self.name} - {self.symbol}'
@@ -55,7 +55,7 @@ class Asset(BaseAsset):
 
     @property
     def validation_status(self):
-        return get_asset_validation_status(self.uuid)
+        return get_asset_validation_status(self)
 
     @classmethod
     def set_active(cls, uuid: Union[str, UUID], is_active: bool):

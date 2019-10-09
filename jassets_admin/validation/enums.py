@@ -16,16 +16,21 @@ class ValidationMethodEnum(Enum):
     CIRCULATING_SUPPLY = 'circulating_supply'
     ALL_SUPPLY_TYPES = 'all_supply_types'
 
-    @classmethod
-    def get_verbose_name(cls, value: 'ValidationMethodEnum') -> str:
-        names = {
-            cls.GAS_AMOUNT: 'gas amount',
-            cls.TOTAL_SUPPLY: 'total supply',
-            cls.MAX_SUPPLY: 'max supply',
-            cls.CIRCULATING_SUPPLY: 'circulating supply',
-            cls.ALL_SUPPLY_TYPES: 'all supply types',
-        }
-        return 'Validate {}'.format(names.get(value, ''))
+
+VALIDATION_METHOD_VERBOSE_NAMES = {
+    ValidationMethodEnum.GAS_AMOUNT: 'gas amount',
+    ValidationMethodEnum.TOTAL_SUPPLY: 'total supply',
+    ValidationMethodEnum.MAX_SUPPLY: 'max supply',
+    ValidationMethodEnum.CIRCULATING_SUPPLY: 'circulating supply',
+    ValidationMethodEnum.ALL_SUPPLY_TYPES: 'all supply types',
+}
+
+VALIDATION_METHODS_FOR_STATUS = [
+    ValidationMethodEnum.GAS_AMOUNT,
+    ValidationMethodEnum.TOTAL_SUPPLY,
+    ValidationMethodEnum.MAX_SUPPLY,
+    ValidationMethodEnum.CIRCULATING_SUPPLY,
+]
 
 
 class ValidationResultEnum(Enum):

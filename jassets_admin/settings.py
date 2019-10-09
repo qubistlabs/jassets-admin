@@ -18,7 +18,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = getenv('SECRET_KEY')
 
-DEBUG = False
+DEBUG = getenv('DEBUG', 0)
 
 ALLOWED_HOSTS = json.loads(getenv('ALLOWED_HOSTS', '["*"]'))
 
@@ -93,6 +93,8 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+STATIC_ROOT = './static'
+
 
 VALIDATOR_URL = getenv('VALIDATOR_URL')
 VALIDATION_TIMEOUT = getenv('VALIDATION_TIMEOUT', 1)

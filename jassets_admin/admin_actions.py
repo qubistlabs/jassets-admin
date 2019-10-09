@@ -1,4 +1,5 @@
-from .validation.enums import ValidationMethodEnum
+from jassets_admin.log_tools import ExceptionSpeaker
+from .validation.enums import ValidationMethodEnum, VALIDATION_METHOD_VERBOSE_NAMES
 from .validation.manager import ValidationManager
 
 
@@ -8,17 +9,20 @@ class ValidationAction:
         self.__name__ = validation_method.value
 
     def __call__(self, modeladmin, request, queryset):
+        manager = ValidationManager()
+        manager.set_speaker(ExceptionSpeaker)
         for asset in queryset:
-            ValidationManager.validate(self.validation_method, asset)
+            manager.validate(self.validation_method, asset)
 
 
 def get_validation_actions():
     result = []
     for v in ValidationMethodEnum:
+        text = f'Validate {VALIDATION_METHOD_VERBOSE_NAMES[v]}'
         action_cls = type(
             v.value,
             (ValidationAction, ),
-            {'short_description': ValidationMethodEnum.get_verbose_name(v)},
+            {'short_description': text},
         )
         action = action_cls(v)
         result.append(action)

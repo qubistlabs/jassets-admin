@@ -1,22 +1,22 @@
 
 from .enums import ValidationMethodEnum
-from .proxies import (
-    GasAmountAssetValidationProxy,
-    TotalSupplyAssetValidationProxy,
-    MaxSupplyAssetValidationProxy,
-    CirculatingSupplyAssetValidationProxy,
-    AllSupplyTypesAssetValidationProxy,
+from .adapters import (
+    GasAmountAssetValidationAdapter,
+    TotalSupplyAssetValidationAdapter,
+    MaxSupplyAssetValidationAdapter,
+    CirculatingSupplyAssetValidationAdapter,
+    AllSupplyTypesAssetValidationAdapter,
 )
 
 
 PROXY_MAP = {
-    ValidationMethodEnum.GAS_AMOUNT: GasAmountAssetValidationProxy,
-    ValidationMethodEnum.TOTAL_SUPPLY: TotalSupplyAssetValidationProxy,
-    ValidationMethodEnum.MAX_SUPPLY: MaxSupplyAssetValidationProxy,
-    ValidationMethodEnum.CIRCULATING_SUPPLY: CirculatingSupplyAssetValidationProxy,
-    ValidationMethodEnum.ALL_SUPPLY_TYPES: AllSupplyTypesAssetValidationProxy,
+    ValidationMethodEnum.GAS_AMOUNT: GasAmountAssetValidationAdapter,
+    ValidationMethodEnum.TOTAL_SUPPLY: TotalSupplyAssetValidationAdapter,
+    ValidationMethodEnum.MAX_SUPPLY: MaxSupplyAssetValidationAdapter,
+    ValidationMethodEnum.CIRCULATING_SUPPLY: CirculatingSupplyAssetValidationAdapter,
+    ValidationMethodEnum.ALL_SUPPLY_TYPES: AllSupplyTypesAssetValidationAdapter,
 }
 
 
-def get_proxy(value: 'ValidationMethodEnum'):
+def get_adapter(value: 'ValidationMethodEnum'):
     return PROXY_MAP[value]
