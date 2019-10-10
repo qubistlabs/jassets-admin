@@ -1,6 +1,14 @@
 
 from enum import Enum
 
+from .adapters import (
+    GasAmountAssetValidationAdapter,
+    TotalSupplyAssetValidationAdapter,
+    MaxSupplyAssetValidationAdapter,
+    CirculatingSupplyAssetValidationAdapter,
+    AllSupplyTypesAssetValidationAdapter,
+)
+
 
 class TaskState(Enum):
     queued = "queued"
@@ -31,6 +39,14 @@ VALIDATION_METHODS_FOR_STATUS = [
     ValidationMethodEnum.MAX_SUPPLY,
     ValidationMethodEnum.CIRCULATING_SUPPLY,
 ]
+
+ADAPTER_MAP = {
+    ValidationMethodEnum.GAS_AMOUNT: GasAmountAssetValidationAdapter,
+    ValidationMethodEnum.TOTAL_SUPPLY: TotalSupplyAssetValidationAdapter,
+    ValidationMethodEnum.MAX_SUPPLY: MaxSupplyAssetValidationAdapter,
+    ValidationMethodEnum.CIRCULATING_SUPPLY: CirculatingSupplyAssetValidationAdapter,
+    ValidationMethodEnum.ALL_SUPPLY_TYPES: AllSupplyTypesAssetValidationAdapter,
+}
 
 
 class ValidationResultEnum(Enum):

@@ -1,22 +1,13 @@
-
-from .enums import ValidationMethodEnum
-from .adapters import (
-    GasAmountAssetValidationAdapter,
-    TotalSupplyAssetValidationAdapter,
-    MaxSupplyAssetValidationAdapter,
-    CirculatingSupplyAssetValidationAdapter,
-    AllSupplyTypesAssetValidationAdapter,
-)
+import json
 
 
-PROXY_MAP = {
-    ValidationMethodEnum.GAS_AMOUNT: GasAmountAssetValidationAdapter,
-    ValidationMethodEnum.TOTAL_SUPPLY: TotalSupplyAssetValidationAdapter,
-    ValidationMethodEnum.MAX_SUPPLY: MaxSupplyAssetValidationAdapter,
-    ValidationMethodEnum.CIRCULATING_SUPPLY: CirculatingSupplyAssetValidationAdapter,
-    ValidationMethodEnum.ALL_SUPPLY_TYPES: AllSupplyTypesAssetValidationAdapter,
-}
-
-
-def get_adapter(value: 'ValidationMethodEnum'):
-    return PROXY_MAP[value]
+def asset_properties_to_dict(asset):
+    result = {}
+    if isinstance(asset.properties, dict):
+        result = asset.properties
+    elif isinstance(asset.properties, str):
+        try:
+            result = json.loads(asset.properties)
+        except (TypeError, json.JSONDecodeError):
+            pass
+    return result

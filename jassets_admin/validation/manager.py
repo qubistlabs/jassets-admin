@@ -8,8 +8,7 @@ from uuid import uuid4
 
 from ..log_tools import LogSpeaker, Speaker
 
-from .enums import TaskState, ValidationMethodEnum
-from .helpers import get_adapter
+from .enums import TaskState, ValidationMethodEnum, ADAPTER_MAP
 from .models import ValidationQueue
 
 
@@ -64,7 +63,7 @@ class ValidationManager:
                 is_valid = response_data['result']
                 message = ''
             done_task_uuids.append(item.task_uuid)
-            adapter = get_adapter(ValidationMethodEnum(item.method))(asset_dict[item.asset_uuid])
+            adapter = ADAPTER_MAP[ValidationMethodEnum(item.method)](asset_dict[item.asset_uuid])
             adapter.store_result(is_valid, message)
             self._speaker.info(
                 f'Asset {item.asset_uuid} is valid: {is_valid}')
@@ -90,7 +89,7 @@ class ValidationManager:
 
     def _send_to_validation(self, validation_method, asset, task_id) -> Optional[Dict[str, Any]]:
         self._check_settings()
-        adapter = get_adapter(validation_method)(asset)
+        adapter = ADAPTER_MAP[validation_method](asset)
         data = {
             'args': adapter.get_data(),
             'id': task_id,

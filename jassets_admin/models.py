@@ -3,7 +3,6 @@ from django.db import models
 from typing import Union
 from uuid import UUID
 
-from .validation.api import get_asset_validation_status
 from .enums import AssetType
 
 
@@ -55,6 +54,8 @@ class Asset(BaseAsset):
 
     @property
     def validation_status(self):
+        from .validation.api import get_asset_validation_status
+
         return get_asset_validation_status(self)
 
     @classmethod

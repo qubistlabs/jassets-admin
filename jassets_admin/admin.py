@@ -8,18 +8,6 @@ from .models import TradingPair, Platform, Asset, Exchange
 class BaseModelAdmin(admin.ModelAdmin):
     list_per_page = 25
 
-    def response_action(self, request, queryset):
-        result = None
-        try:
-            result = super().response_action(request, queryset)
-        except ShowWarning as warning:
-            messages.warning(request, warning)
-        except ShowMessage as message:
-            messages.info(request, message)
-        except ShowError as message:
-            messages.error(request, message)
-        return result
-
 
 class PlatformAdmin(BaseModelAdmin):
     list_display = (

@@ -1,4 +1,7 @@
-from jassets_admin.log_tools import ExceptionSpeaker
+from django.contrib import messages
+
+from .exceptions import ShowWarning, ShowMessage, ShowError
+from .log_tools import ExceptionSpeaker
 from .validation.enums import ValidationMethodEnum, VALIDATION_METHOD_VERBOSE_NAMES
 from .validation.manager import ValidationManager
 
@@ -12,7 +15,14 @@ class ValidationAction:
         manager = ValidationManager()
         manager.set_speaker(ExceptionSpeaker)
         for asset in queryset:
-            manager.validate(self.validation_method, asset)
+            try:
+                manager.validate(self.validation_method, asset)
+            except ShowWarning as warning:
+                messages.warning(request, warning)
+            except ShowMessage as message:
+                messages.info(request, message)
+            except ShowError as message:
+                messages.error(request, message)
 
 
 def get_validation_actions():

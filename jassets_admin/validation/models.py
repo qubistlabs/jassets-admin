@@ -6,8 +6,6 @@ from django.db import models
 
 from ..models import BaseAsset, Asset
 
-from .enums import ValidationMethodEnum
-
 
 class AssetHistory(BaseAsset):
     uuid = models.UUIDField()
@@ -72,7 +70,7 @@ class ValidationQueue(models.Model):
     def add(cls,
             task_uuid: Union[str, UUID],
             uuid: Union[str, UUID],
-            method: ValidationMethodEnum):
+            method: 'ValidationMethodEnum'):
         item = cls(
             task_uuid=task_uuid,
             asset_uuid=uuid,
