@@ -70,7 +70,7 @@ class ValidationQueue(models.Model):
     def add(cls,
             task_uuid: Union[str, UUID],
             uuid: Union[str, UUID],
-            method: 'ValidationMethodEnum'):
+            method):
         item = cls(
             task_uuid=task_uuid,
             asset_uuid=uuid,

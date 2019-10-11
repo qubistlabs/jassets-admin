@@ -1,6 +1,5 @@
-from django.contrib import admin, messages
+from django.contrib import admin
 
-from .exceptions import ShowWarning, ShowMessage, ShowError
 from .admin_actions import get_validation_actions
 from .models import TradingPair, Platform, Asset, Exchange
 
