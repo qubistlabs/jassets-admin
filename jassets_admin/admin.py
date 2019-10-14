@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from .admin_actions import get_validation_actions
 from .models import TradingPair, Platform, Asset, Exchange
 
 
@@ -32,9 +33,9 @@ class AssetAdmin(BaseModelAdmin):
         'id',
         'uuid',
         'name',
-        'description',
         'platform_obj',
 
+        'validation_status',
         'symbol',
         'type',
         'is_active',
@@ -49,7 +50,8 @@ class AssetAdmin(BaseModelAdmin):
     )
     search_fields = (
         'name',
-        'symbol',)
+        'symbol',
+    )
     list_filter = (
         'platform_obj',
         'type',
@@ -57,6 +59,7 @@ class AssetAdmin(BaseModelAdmin):
         'created',
         'updated',
     )
+    actions = list(get_validation_actions())
 
 
 class ExchangeAdmin(BaseModelAdmin):

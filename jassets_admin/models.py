@@ -1,5 +1,7 @@
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+from typing import Union
+from uuid import UUID
 
 from .enums import AssetType
 
@@ -26,23 +28,39 @@ class Platform(JAssetsModel):
         db_table = 'platforms'
 
 
-class Asset(JAssetsModel):
+class BaseAsset(JAssetsModel):
     id = models.IntegerField(primary_key=True)
     uuid = models.UUIDField(unique=True)
     name = models.CharField(max_length=50, null=True)
-    description = models.TextField(default="")
-    platform_obj = models.ForeignKey(
-        "Platform", db_column='platform', null=True, on_delete=models.SET_NULL)
+    description = models.TextField(blank=True)
     symbol = models.CharField(max_length=30, unique=True)
     type = models.CharField(max_length=50, choices=AssetType.choices())
     is_active = models.BooleanField(default=True)
-    address = models.CharField(max_length=42, unique=True)
-    properties = JSONField(null=True)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now_add=True)
+    address = models.CharField(max_length=42, unique=True, null=True)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    updated = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
         return f'{self.type} - {self.name} - {self.symbol}'
+
+    class Meta:
+        abstract = True
+
+
+class Asset(BaseAsset):
+    platform_obj = models.ForeignKey(
+        "Platform", db_column='platform', null=True, on_delete=models.SET_NULL)
+    properties = JSONField(null=True, blank=True)
+
+    @property
+    def validation_status(self):
+        from .validation.api import get_asset_validation_status
+
+        return get_asset_validation_status(self)
+
+    @classmethod
+    def set_active(cls, uuid: Union[str, UUID], is_active: bool):
+        cls.objects.filter(uuid=uuid).update(is_active=is_active)
 
     class Meta:
         db_table = 'assets'
