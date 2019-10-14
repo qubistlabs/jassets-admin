@@ -5,11 +5,11 @@ from .enums import (
     VALIDATION_METHODS_FOR_STATUS,
     VALIDATION_METHOD_VERBOSE_NAMES,
 )
+from .models import AssetHistory
 
 
 def get_asset_validation_status(asset) -> str:
     """ Get string to show results of validation in assets table UI """
-    from .models import AssetHistory
 
     result = []
     history_entry = AssetHistory.get_last(asset)

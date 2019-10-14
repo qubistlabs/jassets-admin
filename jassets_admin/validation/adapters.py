@@ -3,6 +3,7 @@ import json
 
 from abc import ABC, abstractmethod
 
+from .enums import ValidationMethodEnum
 from .helpers import asset_properties_to_dict
 from .models import AssetHistory
 
@@ -44,7 +45,6 @@ class AssetValidationAdapter(ABC):
 class GasAmountAssetValidationAdapter(AssetValidationAdapter):
     @classmethod
     def get_validation_method(cls):
-        from .enums import ValidationMethodEnum
         return ValidationMethodEnum.GAS_AMOUNT
 
     def get_data(self):
@@ -60,7 +60,6 @@ class TotalSupplyAssetValidationAdapter(AssetValidationAdapter):
 
     @classmethod
     def get_validation_method(cls):
-        from .enums import ValidationMethodEnum
         return ValidationMethodEnum.TOTAL_SUPPLY
 
     def get_data(self):
@@ -74,7 +73,6 @@ class MaxSupplyAssetValidationAdapter(AssetValidationAdapter):
 
     @classmethod
     def get_validation_method(cls):
-        from .enums import ValidationMethodEnum
         return ValidationMethodEnum.MAX_SUPPLY
 
     def get_data(self):
@@ -87,7 +85,6 @@ class MaxSupplyAssetValidationAdapter(AssetValidationAdapter):
 class CirculatingSupplyAssetValidationAdapter(AssetValidationAdapter):
     @classmethod
     def get_validation_method(cls):
-        from .enums import ValidationMethodEnum
         return ValidationMethodEnum.CIRCULATING_SUPPLY
 
     def get_data(self):
@@ -100,7 +97,6 @@ class CirculatingSupplyAssetValidationAdapter(AssetValidationAdapter):
 class AllSupplyTypesAssetValidationAdapter(AssetValidationAdapter):
     @classmethod
     def get_validation_method(cls):
-        from .enums import ValidationMethodEnum
         return ValidationMethodEnum.ALL_SUPPLY_TYPES
 
     def get_data(self):
@@ -112,10 +108,17 @@ class AllSupplyTypesAssetValidationAdapter(AssetValidationAdapter):
         ]
 
     def modify_validation_results_dict(self, validation_results, is_valid):
-        from .enums import ValidationMethodEnum
-
         if isinstance(is_valid, bool):
             is_valid = [is_valid, is_valid, is_valid]
         validation_results[ValidationMethodEnum.TOTAL_SUPPLY.value] = is_valid[0]
         validation_results[ValidationMethodEnum.MAX_SUPPLY.value] = is_valid[1]
         validation_results[ValidationMethodEnum.CIRCULATING_SUPPLY.value] = is_valid[2]
+
+
+ADAPTER_MAP = {
+    ValidationMethodEnum.GAS_AMOUNT: GasAmountAssetValidationAdapter,
+    ValidationMethodEnum.TOTAL_SUPPLY: TotalSupplyAssetValidationAdapter,
+    ValidationMethodEnum.MAX_SUPPLY: MaxSupplyAssetValidationAdapter,
+    ValidationMethodEnum.CIRCULATING_SUPPLY: CirculatingSupplyAssetValidationAdapter,
+    ValidationMethodEnum.ALL_SUPPLY_TYPES: AllSupplyTypesAssetValidationAdapter,
+}

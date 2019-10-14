@@ -8,7 +8,8 @@ from uuid import uuid4
 
 from ..log_tools import LogSpeaker, Speaker
 
-from .enums import TaskState, ValidationMethodEnum, ADAPTER_MAP
+from .adapters import ADAPTER_MAP
+from .enums import TaskState, ValidationMethodEnum
 from .models import ValidationQueue
 
 
