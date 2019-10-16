@@ -3,8 +3,8 @@ from os import getenv
 from django.contrib.auth.models import User
 
 
-ADMIN_LOGIN = getenv('ADMIN_LOGIN')
-ADMIN_PASSWORD = getenv('ADMIN_PASSWORD')
+ADMIN_LOGIN = getenv('ADMIN_LOGIN', 'admin')
+ADMIN_PASSWORD = getenv('ADMIN_PASSWORD', 'admin')
 ADMIN_EMAIL = getenv('ADMIN_EMAIL')
 
 if ADMIN_LOGIN is None or ADMIN_PASSWORD is None:
