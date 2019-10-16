@@ -51,6 +51,7 @@ class AssetAdmin(BaseModelAdmin):
     search_fields = (
         'name',
         'symbol',
+        'address',
     )
     list_filter = (
         'platform_obj',
