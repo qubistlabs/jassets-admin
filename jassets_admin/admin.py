@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .admin_actions import get_validation_actions
 from .models import TradingPair, Platform, Asset, Exchange
+from .files.admin import AssetAttachmentInline
 
 
 class BaseModelAdmin(admin.ModelAdmin):
@@ -51,6 +52,7 @@ class AssetAdmin(BaseModelAdmin):
     search_fields = (
         'name',
         'symbol',
+        'uuid',
     )
     list_filter = (
         'platform_obj',
@@ -59,7 +61,12 @@ class AssetAdmin(BaseModelAdmin):
         'created',
         'updated',
     )
+
     actions = list(get_validation_actions())
+
+    inlines = [
+        AssetAttachmentInline,
+    ]
 
 
 class ExchangeAdmin(BaseModelAdmin):
