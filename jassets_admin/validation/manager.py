@@ -13,9 +13,9 @@ from .enums import TaskState, ValidationMethodEnum
 from .models import ValidationQueue
 
 
-ADD_TASK_URL = f'{settings.VALIDATOR_URL}/task/add'
-GET_TASK_URL = f'{settings.VALIDATOR_URL}/task/get'
-REMOVE_TASK_URL = f'{settings.VALIDATOR_URL}/task/remove'
+ADD_TASK_URL = f'http://{settings.VALIDATOR_HOST}:{settings.VALIDATOR_PORT}/task/add'
+GET_TASK_URL = f'http://{settings.VALIDATOR_HOST}:{settings.VALIDATOR_PORT}/task/get'
+REMOVE_TASK_URL = f'http://{settings.VALIDATOR_HOST}:{settings.VALIDATOR_PORT}/task/remove'
 
 
 class ValidationManager:

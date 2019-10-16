@@ -27,5 +27,6 @@ Available environment variables (all of them are required, especially if there i
 - `LISTEN_HOST` - hostname to start server by runserver command
 - `LISTEN_PORT` (default `8080`) port to start server by runserver command
 
-- `VALIDATOR_URL` (default is empty) - URL of asset validation service
+- `VALIDATOR_HOST` (default is empty) - host of asset validation service
+- `VALIDATOR_PORT` (default is empty) - port of asset validation service
 - `VALIDATION_TIMEOUT` (default `1`) - interval in seconds between checks for asset validation results
