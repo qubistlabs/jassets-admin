@@ -1,5 +1,7 @@
 from django.forms import ModelForm, BaseInlineFormSet
 
+from .query import StaticDataModel
+
 
 class StaticDataForm(ModelForm):
 
@@ -14,6 +16,9 @@ class StaticDataForm(ModelForm):
 
 
 class StaticDataInlineFormSet(BaseInlineFormSet):
+
+    model: StaticDataModel
+
     def save(self, commit=True):
         instances = super().save(commit)
         self.model.save_data(*instances)

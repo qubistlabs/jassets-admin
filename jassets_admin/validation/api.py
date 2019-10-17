@@ -27,4 +27,3 @@ def get_asset_validation_status(asset) -> str:
             f'validation status is {status.value}'
         ))
     return mark_safe('<br/><hr/>'.join(result))
-

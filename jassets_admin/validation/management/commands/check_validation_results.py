@@ -18,4 +18,3 @@ class Command(BaseCommand):
         while True:
             manager.process_results()
             sleep(settings.VALIDATION_TIMEOUT)
-

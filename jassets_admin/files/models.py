@@ -8,11 +8,11 @@ from django.db.models.manager import BaseManager
 
 from .helpers import get_file_hash
 from .manifest import FileManifest
-from .query import StaticDataQuerySet
+from .query import StaticDataQuerySet, StaticDataModel
 from .storage import JassetsStaticStorage
 
 
-class AssetAttachment(models.Model):
+class AssetAttachment(StaticDataModel):
     asset = models.ForeignKey('Asset', on_delete=models.DO_NOTHING)
     id = models.CharField(max_length=100, primary_key=True)
     name = models.CharField(max_length=100, blank=True)
@@ -27,7 +27,11 @@ class AssetAttachment(models.Model):
     objects = AssetAttachmentManager()
 
     @classmethod
-    def get_data(cls, *args, **kwargs) -> List[models.Model]:
+    def get_data(cls, *args, **kwargs) -> List['StaticDataModel']:
+        """
+        Download manifest and return model instances for asset
+        Download associated files as well
+        """
         result = []
         asset = kwargs.get('asset')
         if asset is not None:
@@ -56,13 +60,16 @@ class AssetAttachment(models.Model):
         return result
 
     @classmethod
-    def save_data(cls, *instances: 'AssetAttachment'):
+    def save_data(cls, *instances: 'StaticDataModel'):
+        """
+        Given new and changed instances upload files and updated manifest
+        """
         storage = JassetsStaticStorage()
 
         manifest = storage.get_manifest()
 
         for instance in instances:
-            instance.path.save(instance.path.name, instance.path._file.file, save=False)
+            instance.path.save(instance.path.name, instance.path.file.file, save=False)
             local_filename = instance.path.path
             ext = Path(local_filename).suffix
             filename = uuid4().hex
@@ -81,5 +88,5 @@ class AssetAttachment(models.Model):
                     metadata=instance.metadata
                 )
             )
-
-        storage.update_manifest(manifest)
+        if instances:
+            storage.update_manifest(manifest)

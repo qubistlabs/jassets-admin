@@ -6,4 +6,3 @@ def get_file_hash(filename):
     with open(filename, 'rb') as fp:
         hash.update(fp.read())
     return hash.hexdigest()
-

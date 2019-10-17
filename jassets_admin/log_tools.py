@@ -54,4 +54,3 @@ class ExceptionSpeaker(Speaker):
     @classmethod
     def error(cls, msg):
         raise ShowError(msg)
-

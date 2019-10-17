@@ -100,6 +100,7 @@ class ValidationManager:
             response = self._request(ADD_TASK_URL, data)
         except URLError:
             self._speaker.error('Validator service is unavailable')
+            return None
         else:
             return self._response_to_dict(response)
 

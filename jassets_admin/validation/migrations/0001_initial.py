@@ -33,7 +33,10 @@ class Migration(migrations.Migration):
                 ('id', models.IntegerField(primary_key=True, serialize=False)),
                 ('name', models.CharField(max_length=50, null=True)),
                 ('description', models.TextField(blank=True)),
-                ('type', models.CharField(choices=[('FIAT', 'FIAT'), ('COIN', 'COIN'), ('TOKEN', 'TOKEN')], max_length=50)),
+                ('type', models.CharField(
+                    choices=[('FIAT', 'FIAT'), ('COIN', 'COIN'), ('TOKEN', 'TOKEN')],
+                    max_length=50
+                )),
                 ('is_active', models.BooleanField(default=True)),
                 ('created', models.DateTimeField(auto_now_add=True, null=True)),
                 ('updated', models.DateTimeField(auto_now_add=True, null=True)),
@@ -44,9 +47,21 @@ class Migration(migrations.Migration):
                 ('properties', models.TextField(blank=True, null=True)),
                 ('is_valid', models.BooleanField(verbose_name='Overall validation result')),
                 ('validation_results', models.TextField(blank=True, null=True)),
-                ('validation_time', models.DateTimeField(verbose_name='What time did the result come')),
-                ('result_message', models.TextField(blank=True, null=True, verbose_name='Error or information message from validator')),
-                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='Who requested validation')),
+                ('validation_time', models.DateTimeField(
+                    verbose_name='What time did the result come'
+                )),
+                ('result_message', models.TextField(
+                    blank=True,
+                    null=True,
+                    verbose_name='Error or information message from validator'
+                )),
+                ('user', models.ForeignKey(
+                    blank=True,
+                    null=True,
+                    on_delete=django.db.models.deletion.SET_NULL,
+                    to=settings.AUTH_USER_MODEL,
+                    verbose_name='Who requested validation'
+                )),
             ],
             options={
                 'verbose_name': 'Asset history',
