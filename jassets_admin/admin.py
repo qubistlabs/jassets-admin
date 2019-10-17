@@ -53,6 +53,7 @@ class AssetAdmin(BaseModelAdmin):
         'name',
         'symbol',
         'uuid',
+        'address',
     )
     list_filter = (
         'platform_obj',
