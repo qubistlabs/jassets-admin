@@ -122,5 +122,5 @@ class ValidationManager:
         return result
 
     def _check_settings(self):
-        if settings.VALIDATOR_URL is None:
-            self._speaker.error('Validation service URL not set')
+        if settings.VALIDATOR_HOST is None or settings.VALIDATOR_PORT is None:
+            self._speaker.error('Validation service host and port must be set')
