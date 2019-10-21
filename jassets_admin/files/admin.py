@@ -1,12 +1,12 @@
 from django.contrib.admin import TabularInline
 
-from .forms import StaticDataForm, StaticDataInlineFormSet
-from .models import AssetAttachment
+from ..models import AssetAttachment
+
+from .forms import AssetAttachmentForm
 
 
 class AssetAttachmentInline(TabularInline):
 
     model = AssetAttachment
-    form = StaticDataForm
-    formset = StaticDataInlineFormSet
+    form = AssetAttachmentForm
     extra = 1
