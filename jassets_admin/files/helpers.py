@@ -20,16 +20,19 @@ def get_file_hash(filename):
     return hash.hexdigest()
 
 
-def get_attachment(obj: AssetAttachment):
+def get_attachment(obj: AssetAttachment) -> Optional[FieldFile]:
     """ Load file from remote storage and prepare for assignment to field """
     storage = JassetsStaticStorage()
-    storage.fetch_file(obj.path)
-    field = models.FileField()
-    return FieldFile(
-        instance=obj,
-        field=field,
-        name=obj.path,
-    )
+    success = storage.fetch_file(obj.path)
+    if success:
+        field = models.FileField()
+        return FieldFile(
+            instance=obj,
+            field=field,
+            name=obj.path,
+        )
+    else:
+        return None
 
 
 def save_attachment(attachment_obj: Optional[File]) -> Optional[Tuple[str, str]]:

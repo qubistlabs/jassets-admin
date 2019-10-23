@@ -63,9 +63,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'jassets_admin.wsgi.application'
 
-POSTGRES_HOST = getenv('POSTGRES_HOST', '0.0.0.0')
+POSTGRES_HOST = getenv('POSTGRES_HOST', 'jassets-postgres')
 POSTGRES_PORT = int(getenv('POSTGRES_PORT', '9432'))
-POSTGRES_USER = getenv('POSTGRES_USER', 'jassets')
+POSTGRES_USER = getenv('POSTGRES_USER', 'postgres')
 POSTGRES_PASSWORD = getenv('POSTGRES_PASSWORD')
 POSTGRES_DB = getenv('POSTGRES_DB', 'jassets')
 

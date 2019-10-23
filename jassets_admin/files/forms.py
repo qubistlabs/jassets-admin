@@ -1,5 +1,6 @@
 from uuid import uuid4
 from django import forms
+from django.forms.utils import ErrorList
 
 from .helpers import save_attachment, get_attachment, get_file_hash
 
@@ -13,12 +14,19 @@ class AssetAttachmentForm(forms.ModelForm):
     # FIXME does'n work this way for some reason
     field_order = ('name', 'path', 'attachment', 'metadata', 'id', 'version')
 
-    def __init__(self, *args, **kwargs):
-        instance = kwargs.get('instance', None)
-        initial = kwargs.get('initial', {})
+    def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None,
+                 initial=None, error_class=ErrorList, label_suffix=None,
+                 empty_permitted=False, instance=None, use_required_attribute=None,
+                 renderer=None):
+        initial = initial or {}
         if instance is not None:
             initial['attachment'] = get_attachment(instance)
-        super().__init__(initial=initial, *args, **kwargs)
+        super().__init__(
+            data=data, files=files, auto_id=auto_id, prefix=prefix,
+            initial=initial, error_class=error_class, label_suffix=label_suffix,
+            empty_permitted=empty_permitted, instance=instance,
+            use_required_attribute=use_required_attribute, renderer=renderer
+        )
         self._setup_fields()
 
     def clean_attachment(self):
