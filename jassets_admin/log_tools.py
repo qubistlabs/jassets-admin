@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 from django.contrib import messages
 from django.core.handlers.wsgi import WSGIRequest
 from loguru import logger
