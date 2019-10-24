@@ -35,8 +35,7 @@ class JassetsStaticStorage:
         if file_path.exists():
             return True
 
-        if not file_path.parent.exists():
-            file_path.parent.mkdir()
+        file_path.parent.mkdir(parents=True, exist_ok=True)
         with open(file_path, 'wb+') as f:
             try:
                 self.s3.download_fileobj(self.bucket_name, name, f)

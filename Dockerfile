@@ -7,6 +7,8 @@ ENV POSTGRES_HOST "jassets-postgres"
 ENV POSTGRES_PORT "5432"
 ENV POSTGRES_USER "postgres"
 ENV POSTGRES_PASSWORD ""
+ENV LOG_LEVEL "INFO"
+ENV SENTRY_DSN ""
 ENV DOCKERIZE_VERSION "v0.6.1"
 
 RUN wget -q https://github.com/jibrelnetwork/dockerize/releases/latest/download/dockerize-linux-amd64-latest.tar.gz  \

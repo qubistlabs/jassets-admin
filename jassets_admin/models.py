@@ -104,9 +104,9 @@ class AssetAttachment(JAssetsModel):
     id = models.UUIDField(primary_key=True)
     asset = models.ForeignKey(
         "Asset", db_column='asset_id', on_delete=models.CASCADE)
-    name = models.CharField(max_length=50, blank=True, null=True)
-    version = models.CharField(max_length=50)
-    path = models.CharField(max_length=500)
+    name = models.TextField(blank=True, null=True)
+    version = models.TextField()
+    path = models.TextField()
     metadata = JSONField(blank=True, null=True, default=dict)
 
     class Meta:
