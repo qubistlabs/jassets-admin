@@ -97,3 +97,20 @@ class TradingPair(JAssetsModel):
 
     def __str__(self):
         return f'{self.symbol}'
+
+
+class AssetAttachment(JAssetsModel):
+    """ File associated with asset """
+    id = models.UUIDField(primary_key=True)
+    asset = models.ForeignKey(
+        "Asset", db_column='asset_id', on_delete=models.CASCADE)
+    name = models.TextField(blank=True, null=True)
+    version = models.TextField()
+    path = models.TextField()
+    metadata = JSONField(blank=True, null=True, default=dict)
+
+    class Meta:
+        db_table = 'asset_attachment'
+
+    def __str__(self):
+        return f'File {self.name or ""} {self.path}'

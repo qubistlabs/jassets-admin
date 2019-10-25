@@ -2,6 +2,7 @@ import datetime
 import json
 
 from abc import ABC, abstractmethod
+from typing import Dict, Type
 
 from .enums import ValidationMethodEnum
 from .helpers import asset_properties_to_dict
@@ -9,7 +10,7 @@ from .models import AssetHistory
 
 
 class AssetValidationAdapter(ABC):
-    
+
     def __init__(self, asset):
         self.asset = asset
         self.properties = asset_properties_to_dict(asset)
@@ -25,8 +26,8 @@ class AssetValidationAdapter(ABC):
 
     def store_result(self, is_valid, message):
         """ Save result from validation service """
-        last_history_entry = AssetHistory.get_last(self.asset)
-        validation_results = last_history_entry.validation_results_dict if last_history_entry else {}
+        last_history_item = AssetHistory.get_last(self.asset)
+        validation_results = last_history_item.validation_results_dict if last_history_item else {}
         history_entry = AssetHistory.from_asset(self.asset)
         history_entry.result_message = message
         history_entry.validation_time = datetime.datetime.now()
@@ -115,7 +116,7 @@ class AllSupplyTypesAssetValidationAdapter(AssetValidationAdapter):
         validation_results[ValidationMethodEnum.CIRCULATING_SUPPLY.value] = is_valid[2]
 
 
-ADAPTER_MAP = {
+ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
     ValidationMethodEnum.GAS_AMOUNT: GasAmountAssetValidationAdapter,
     ValidationMethodEnum.TOTAL_SUPPLY: TotalSupplyAssetValidationAdapter,
     ValidationMethodEnum.MAX_SUPPLY: MaxSupplyAssetValidationAdapter,
