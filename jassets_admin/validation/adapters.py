@@ -3,7 +3,11 @@ import json
 
 from abc import ABC, abstractmethod
 from typing import Dict, Type
+from django.conf import settings
 
+from ..exceptions import ShowError
+
+from .api import is_asset_valid
 from .enums import ValidationMethodEnum
 from .helpers import asset_properties_to_dict
 from .models import AssetHistory
@@ -50,7 +54,7 @@ class GasAmountAssetValidationAdapter(AssetValidationAdapter):
 
     def get_data(self):
         return [
-            'https://main-node.jwallet.network',
+            settings.ETH_NODE,
             self.asset.address,
             self.properties.get('deployment_block'),
             self.properties.get('static_gas_amount'),
@@ -116,10 +120,41 @@ class AllSupplyTypesAssetValidationAdapter(AssetValidationAdapter):
         validation_results[ValidationMethodEnum.CIRCULATING_SUPPLY.value] = is_valid[2]
 
 
+class DeploymentBlockValidationAdapter(AssetValidationAdapter):
+    @classmethod
+    def get_validation_method(cls):
+        return ValidationMethodEnum.DEPLOYMENT_BLOCK
+
+    def get_data(self):
+        return [
+            settings.ETH_NODE,
+            self.asset.address,
+            self.properties.get('deployment_block'),
+        ]
+
+
+class TransfersStartedTimestampValidationAdapter(AssetValidationAdapter):
+    @classmethod
+    def get_validation_method(cls):
+        return ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP
+
+    def get_data(self):
+        if not is_asset_valid(self.asset, ValidationMethodEnum.DEPLOYMENT_BLOCK):
+            raise ShowError('Deployment block number must be valid to perform this validation')
+        return [
+            settings.ETH_NODE,
+            self.asset.address,
+            self.properties.get('transfers_started_timestamp'),
+            self.properties.get('deployment_block'),
+        ]
+
+
 ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
     ValidationMethodEnum.GAS_AMOUNT: GasAmountAssetValidationAdapter,
     ValidationMethodEnum.TOTAL_SUPPLY: TotalSupplyAssetValidationAdapter,
     ValidationMethodEnum.MAX_SUPPLY: MaxSupplyAssetValidationAdapter,
     ValidationMethodEnum.CIRCULATING_SUPPLY: CirculatingSupplyAssetValidationAdapter,
     ValidationMethodEnum.ALL_SUPPLY_TYPES: AllSupplyTypesAssetValidationAdapter,
+    ValidationMethodEnum.DEPLOYMENT_BLOCK: DeploymentBlockValidationAdapter,
+    ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP: TransfersStartedTimestampValidationAdapter,
 }
