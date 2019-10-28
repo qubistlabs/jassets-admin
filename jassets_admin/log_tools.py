@@ -60,7 +60,7 @@ class ExceptionSpeaker(Speaker):
 class LogWrapper:
     """ Context manager that allow to catch exceptions and turn them to messages """
     request: WSGIRequest
-    
+
     def __init__(self, request):
         self.request = request
 
