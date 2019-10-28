@@ -51,6 +51,7 @@ Available environment variables (all of them are required, especially if there i
 - `VALIDATOR_HOST` (default is empty) - host of asset validation service (jassets-validator)
 - `VALIDATOR_PORT` (default is empty) - port of asset validation service (jassets-validator)
 - `VALIDATION_TIMEOUT` (default `1`) - interval in seconds between checks for asset validation results
+- `ETH_NODE` (default `https://main-node.jwallet.network`) - ethereum node to perform some validations
 
 #### config for accessing asset files stored in S3
 

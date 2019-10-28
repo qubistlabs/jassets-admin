@@ -14,6 +14,8 @@ class ValidationMethodEnum(Enum):
     MAX_SUPPLY = 'max_supply'
     CIRCULATING_SUPPLY = 'circulating_supply'
     ALL_SUPPLY_TYPES = 'all_supply_types'
+    DEPLOYMENT_BLOCK = 'deployment_block'
+    TRANSFERS_STARTED_TIMESTAMP = 'transfers_started_timestamp'
 
 
 VALIDATION_METHOD_VERBOSE_NAMES = {
@@ -22,6 +24,8 @@ VALIDATION_METHOD_VERBOSE_NAMES = {
     ValidationMethodEnum.MAX_SUPPLY: 'max supply',
     ValidationMethodEnum.CIRCULATING_SUPPLY: 'circulating supply',
     ValidationMethodEnum.ALL_SUPPLY_TYPES: 'all supply types',
+    ValidationMethodEnum.DEPLOYMENT_BLOCK: 'deployment block number',
+    ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP: 'transfers started timestamp',
 }
 
 VALIDATION_METHODS_FOR_STATUS = [
@@ -29,6 +33,8 @@ VALIDATION_METHODS_FOR_STATUS = [
     ValidationMethodEnum.TOTAL_SUPPLY,
     ValidationMethodEnum.MAX_SUPPLY,
     ValidationMethodEnum.CIRCULATING_SUPPLY,
+    ValidationMethodEnum.DEPLOYMENT_BLOCK,
+    ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP,
 ]
 
 

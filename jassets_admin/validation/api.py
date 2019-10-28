@@ -23,7 +23,13 @@ def get_asset_validation_status(asset) -> str:
         else:
             status = ValidationResultEnum.UNKNOWN
         result.append((
-            f'{VALIDATION_METHOD_VERBOSE_NAMES[method].capitalize()} '
-            f'validation status is {status.value}'
+            f'{VALIDATION_METHOD_VERBOSE_NAMES[method].capitalize()}: {status.value}'
         ))
     return mark_safe('<br/><hr/>'.join(result))
+
+
+def is_asset_valid(asset, method) -> str:
+    """ Is asset valid for one for one validation method """
+    history_entry = AssetHistory.get_last(asset)
+    results_dict = history_entry.validation_results_dict if history_entry else {}
+    return results_dict.get(method.value, False)
