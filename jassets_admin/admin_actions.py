@@ -1,5 +1,5 @@
 from .log_tools import ExceptionSpeaker, LogWrapper
-from .validation.enums import ValidationMethodEnum, VALIDATION_METHOD_VERBOSE_NAMES
+from .validation.enums import ValidationMethodEnum, VALIDATION_METHOD_ACTION_NAME
 from .validation.manager import ValidationManager
 
 
@@ -19,11 +19,10 @@ class ValidationAction:
 def get_validation_actions():
     result = []
     for v in ValidationMethodEnum:
-        text = f'Validate {VALIDATION_METHOD_VERBOSE_NAMES[v]}'
         action_cls = type(
             v.value,
             (ValidationAction, ),
-            {'short_description': text},
+            {'short_description': VALIDATION_METHOD_ACTION_NAME[v]},
         )
         action = action_cls(v)
         result.append(action)
