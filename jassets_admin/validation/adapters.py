@@ -19,9 +19,9 @@ class AssetValidationAdapter(ABC):
         self.asset = asset
         self.properties = asset_properties_to_dict(asset)
 
-    @classmethod
+    @staticmethod
     @abstractmethod
-    def get_validation_method(cls):
+    def get_validation_method():
         pass
 
     @abstractmethod
@@ -43,10 +43,10 @@ class AssetValidationAdapter(ABC):
         history_entry.result_message = message
         history_entry.validation_time = datetime.datetime.now()
         self.modify_validation_results_dict(validation_results, result)
-        history_entry.is_valid = all((
+        history_entry.is_valid = all(
             v is True for k, v in validation_results.items()
             if ValidationMethodEnum(k) in VALIDATION_METHODS_FOR_STATUS
-        ))
+        )
         history_entry.validation_results = json.dumps(validation_results)
         history_entry.save()
         return history_entry
@@ -60,8 +60,8 @@ class AssetValidationAdapter(ABC):
 
 
 class GasAmountAssetValidationAdapter(AssetValidationAdapter):
-    @classmethod
-    def get_validation_method(cls):
+    @staticmethod
+    def get_validation_method():
         return ValidationMethodEnum.GAS_AMOUNT
 
     def get_data(self):
@@ -75,8 +75,8 @@ class GasAmountAssetValidationAdapter(AssetValidationAdapter):
 
 class TotalSupplyAssetValidationAdapter(AssetValidationAdapter):
 
-    @classmethod
-    def get_validation_method(cls):
+    @staticmethod
+    def get_validation_method():
         return ValidationMethodEnum.TOTAL_SUPPLY
 
     def get_data(self):
@@ -88,8 +88,8 @@ class TotalSupplyAssetValidationAdapter(AssetValidationAdapter):
 
 class MaxSupplyAssetValidationAdapter(AssetValidationAdapter):
 
-    @classmethod
-    def get_validation_method(cls):
+    @staticmethod
+    def get_validation_method():
         return ValidationMethodEnum.MAX_SUPPLY
 
     def get_data(self):
@@ -100,8 +100,8 @@ class MaxSupplyAssetValidationAdapter(AssetValidationAdapter):
 
 
 class CirculatingSupplyAssetValidationAdapter(AssetValidationAdapter):
-    @classmethod
-    def get_validation_method(cls):
+    @staticmethod
+    def get_validation_method():
         return ValidationMethodEnum.CIRCULATING_SUPPLY
 
     def get_data(self):
@@ -112,8 +112,8 @@ class CirculatingSupplyAssetValidationAdapter(AssetValidationAdapter):
 
 
 class AllSupplyTypesAssetValidationAdapter(AssetValidationAdapter):
-    @classmethod
-    def get_validation_method(cls):
+    @staticmethod
+    def get_validation_method():
         return ValidationMethodEnum.ALL_SUPPLY_TYPES
 
     def get_data(self):
@@ -124,17 +124,21 @@ class AllSupplyTypesAssetValidationAdapter(AssetValidationAdapter):
             self.properties.get('circulating_supply'),
         ]
 
-    def modify_validation_results_dict(self, validation_results, result):
-        if isinstance(result, bool):
-            result = [result, result, result]
-        validation_results[ValidationMethodEnum.TOTAL_SUPPLY.value] = result[0]
-        validation_results[ValidationMethodEnum.MAX_SUPPLY.value] = result[1]
-        validation_results[ValidationMethodEnum.CIRCULATING_SUPPLY.value] = result[2]
+    def modify_validation_results_dict(self, validation_results, results):
+        if not isinstance(results, list):
+            results = [results] * 3
+        methods = (
+            ValidationMethodEnum.TOTAL_SUPPLY,
+            ValidationMethodEnum.MAX_SUPPLY,
+            ValidationMethodEnum.CIRCULATING_SUPPLY,
+        )
+        for result, method in zip(results, methods):
+            validation_results[method.value] = result
 
 
 class DeploymentBlockValidationAdapter(AssetValidationAdapter):
-    @classmethod
-    def get_validation_method(cls):
+    @staticmethod
+    def get_validation_method():
         return ValidationMethodEnum.DEPLOYMENT_BLOCK
 
     def get_data(self):
@@ -146,8 +150,8 @@ class DeploymentBlockValidationAdapter(AssetValidationAdapter):
 
 
 class TransfersStartedTimestampValidationAdapter(AssetValidationAdapter):
-    @classmethod
-    def get_validation_method(cls):
+    @staticmethod
+    def get_validation_method():
         return ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP
 
     def get_data(self):
@@ -162,8 +166,8 @@ class TransfersStartedTimestampValidationAdapter(AssetValidationAdapter):
 
 
 class TransfersStartedTimestampGetterAdapter(AssetValidationAdapter):
-    @classmethod
-    def get_validation_method(cls):
+    @staticmethod
+    def get_validation_method():
         return ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP_GETTER
 
     def get_data(self):
