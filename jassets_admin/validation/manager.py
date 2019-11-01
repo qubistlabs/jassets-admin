@@ -27,11 +27,11 @@ class ValidationManager:
         """ Set logging mechanism """
         self._speaker = speaker
 
-    def validate(self, validation_method, asset):
+    def validate(self, validation_method, asset, *args, **kwargs):
         """ Send asset to validation """
         task_id = str(uuid4())
         ValidationQueue.add(task_id, asset.uuid, validation_method)
-        response_data = self._send_to_validation(validation_method, asset, task_id)
+        response_data = self._send_to_validation(validation_method, asset, task_id, *args, **kwargs)
         if response_data:
             if response_data['state'] == TaskState.queued.value:
                 self._speaker.info('Process started')
@@ -100,10 +100,17 @@ class ValidationManager:
         string = response.read().decode('utf-8')
         return json.loads(string)
 
-    def _send_to_validation(self, validation_method, asset, task_id) -> Optional[Dict[str, Any]]:
+    def _send_to_validation(
+            self,
+            validation_method,
+            asset,
+            task_id,
+            *args,
+            **kwargs
+    ) -> Optional[Dict[str, Any]]:
         result = None
         self._check_settings()
-        adapter = ADAPTER_MAP[validation_method](asset)
+        adapter = ADAPTER_MAP[validation_method](asset, *args, **kwargs)
         data = {
             'args': adapter.get_data(),
             'id': task_id,
