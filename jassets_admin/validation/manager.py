@@ -1,9 +1,8 @@
-import json
+import requests
 
-from typing import Any, Dict, Optional, Type
 from django.conf import settings
-from urllib import request
-from urllib.error import HTTPError, URLError
+from json import JSONDecodeError
+from typing import Any, Dict, Optional, Type
 from uuid import uuid4
 
 from ..log_tools import LogSpeaker, Speaker
@@ -81,27 +80,18 @@ class ValidationManager:
 
     def _request(self, url, data):
         """ Make request """
-        payload = json.dumps(data)
-        payload_bytes = payload.encode('utf-8')
-        task_request = request.Request(url)
-        task_request.add_header('Content-Type', 'application/json; charset=utf-8')
-        task_request.add_header('Content-Length', len(payload_bytes))
         try:
-            return request.urlopen(task_request, payload_bytes)
-        except HTTPError as e:
-            self._speaker.error(
-                f'Error happened. Validator service returned this: {e}')
-        except (URLError, ConnectionResetError):
-            self._speaker.error(
-                f'Validator service is unavailable')
-        return None
-
-    def _response_to_dict(self, response) -> Dict[str, Any]:
-        string = response.read().decode('utf-8')
-        return json.loads(string)
+            return requests.post(url=url, json=data).json()
+        except requests.HTTPError as e:
+            self._speaker.error(f'Error happened. Validator service returned this: {e}')
+            return None
+        except requests.ConnectionError:
+            self._speaker.error('Validator service is unavailable')
+            return None
+        except JSONDecodeError:
+            return None
 
     def _send_to_validation(self, validation_method, asset, task_id) -> Optional[Dict[str, Any]]:
-        result = None
         self._check_settings()
         adapter = ADAPTER_MAP[validation_method](asset)
         data = {
@@ -109,23 +99,15 @@ class ValidationManager:
             'id': task_id,
             'type': validation_method.value
         }
-        response = self._request(ADD_TASK_URL, data)
-        if response is not None:
-            result = self._response_to_dict(response)
-        return result
+        return self._request(ADD_TASK_URL, data)
 
     def _ask_for_result(self, task_uuid) -> Optional[Dict[str, Any]]:
-        result = None
         self._check_settings()
         data = {
             'id': str(task_uuid),
         }
 
-        response = self._request(GET_TASK_URL, data)
-
-        if response is not None:
-            result = self._response_to_dict(response)
-        return result
+        return self._request(GET_TASK_URL, data)
 
     def _check_settings(self):
         if settings.VALIDATOR_HOST is None or settings.VALIDATOR_PORT is None:
