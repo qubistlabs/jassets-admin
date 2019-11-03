@@ -84,12 +84,10 @@ class ValidationManager:
             return requests.post(url=url, json=data).json()
         except requests.HTTPError as e:
             self._speaker.error(f'Error happened. Validator service returned this: {e}')
-            return None
-        except requests.ConnectionError:
-            self._speaker.error('Validator service is unavailable')
-            return None
-        except JSONDecodeError:
-            return None
+        except requests.ConnectionError as e:
+            self._speaker.error(f'Validator service is unavailable. {e}')
+        except JSONDecodeError as e:
+            self._speaker.error(f'Validator service returned unreadable answer. {e}')
 
     def _send_to_validation(self, validation_method, asset, task_id) -> Optional[Dict[str, Any]]:
         self._check_settings()
