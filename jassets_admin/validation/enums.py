@@ -16,26 +16,28 @@ class ValidationMethodEnum(Enum):
     ALL_SUPPLY_TYPES = 'all_supply_types'
     DEPLOYMENT_BLOCK = 'deployment_block'
     TRANSFERS_STARTED_TIMESTAMP = 'transfers_started_timestamp'
+    TRANSFERS_STARTED_TIMESTAMP_GETTER = 'transfers_started_timestamp_getter'
 
 
-VALIDATION_METHOD_VERBOSE_NAMES = {
-    ValidationMethodEnum.GAS_AMOUNT: 'gas amount',
-    ValidationMethodEnum.TOTAL_SUPPLY: 'total supply',
-    ValidationMethodEnum.MAX_SUPPLY: 'max supply',
-    ValidationMethodEnum.CIRCULATING_SUPPLY: 'circulating supply',
-    ValidationMethodEnum.ALL_SUPPLY_TYPES: 'all supply types',
-    ValidationMethodEnum.DEPLOYMENT_BLOCK: 'deployment block number',
-    ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP: 'transfers started timestamp',
+VALIDATION_METHOD_ACTION_NAME = {
+    ValidationMethodEnum.GAS_AMOUNT: 'Validate gas amount',
+    ValidationMethodEnum.TOTAL_SUPPLY: 'Validate total supply',
+    ValidationMethodEnum.MAX_SUPPLY: 'Validate max supply',
+    ValidationMethodEnum.CIRCULATING_SUPPLY: 'Validate circulating supply',
+    ValidationMethodEnum.ALL_SUPPLY_TYPES: 'Validate all supply types',
+    ValidationMethodEnum.DEPLOYMENT_BLOCK: 'Validate deployment block number',
+    ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP: 'Validate transfers started timestamp',
+    ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP_GETTER: 'Fill transfers started timestamp',
 }
 
-VALIDATION_METHODS_FOR_STATUS = [
-    ValidationMethodEnum.GAS_AMOUNT,
-    ValidationMethodEnum.TOTAL_SUPPLY,
-    ValidationMethodEnum.MAX_SUPPLY,
-    ValidationMethodEnum.CIRCULATING_SUPPLY,
-    ValidationMethodEnum.DEPLOYMENT_BLOCK,
-    ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP,
-]
+VALIDATION_METHODS_FOR_STATUS = {
+    ValidationMethodEnum.GAS_AMOUNT: 'Gas amount',
+    ValidationMethodEnum.TOTAL_SUPPLY: 'Total supply',
+    ValidationMethodEnum.MAX_SUPPLY: 'Max supply',
+    ValidationMethodEnum.CIRCULATING_SUPPLY: 'Circulating supply',
+    ValidationMethodEnum.DEPLOYMENT_BLOCK: 'Deployment block number',
+    ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP: 'Transfers started timestamp',
+}
 
 
 class ValidationResultEnum(Enum):

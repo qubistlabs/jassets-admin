@@ -1,9 +1,8 @@
-import json
+import requests
 
-from typing import Any, Dict, Optional, Type
 from django.conf import settings
-from urllib import request
-from urllib.error import HTTPError, URLError
+from json import JSONDecodeError
+from typing import Any, Dict, Optional, Type
 from uuid import uuid4
 
 from ..log_tools import LogSpeaker, Speaker
@@ -34,10 +33,10 @@ class ValidationManager:
         response_data = self._send_to_validation(validation_method, asset, task_id)
         if response_data:
             if response_data['state'] == TaskState.queued.value:
-                self._speaker.info('Validation started')
+                self._speaker.info('Process started')
             else:
                 self._speaker.warning(
-                    f'Validation can`t be done. Validator returned this: {response_data["result"]}'
+                    f'Process can`t be done. Validator returned this: {response_data["result"]}'
                 )
 
     def process_results(self):
@@ -56,37 +55,39 @@ class ValidationManager:
                 continue
 
             if response_data['state'] == TaskState.failed.value:
-                is_valid = False
+                result = None
                 message = response_data["result"]
                 self._speaker.error(
                     f'Validation failed. Validator returned this: {response_data["result"]}')
             else:
-                is_valid = response_data['result']
+                result = response_data['result']
                 message = ''
             done_task_uuids.append(item.task_uuid)
             adapter = ADAPTER_MAP[ValidationMethodEnum(item.method)](asset_dict[item.asset_uuid])
-            adapter.store_result(is_valid, message)
+            adapter.store_result(result, message)
             self._speaker.info(
-                f'Asset {item.asset_uuid} is valid: {is_valid}')
+                f'Asset {item.asset_uuid} is valid: {result}')
         ValidationQueue.remove(done_task_uuids)
 
     def clear_queue(self):
         """ Clear validation queue """
+        self._check_settings()
+        for item in ValidationQueue.get_all():
+            data = {'id': str(item.task_uuid)}
+            self._request(REMOVE_TASK_URL, data)
         ValidationQueue.remove_all()
         self._speaker.info('Validation queue cleared')
 
     def _request(self, url, data):
         """ Make request """
-        payload = json.dumps(data)
-        payload_bytes = payload.encode('utf-8')
-        task_request = request.Request(url)
-        task_request.add_header('Content-Type', 'application/json; charset=utf-8')
-        task_request.add_header('Content-Length', len(payload_bytes))
-        return request.urlopen(task_request, payload_bytes)
-
-    def _response_to_dict(self, response) -> Dict[str, Any]:
-        string = response.read().decode('utf-8')
-        return json.loads(string)
+        try:
+            return requests.post(url=url, json=data).json()
+        except requests.HTTPError as e:
+            self._speaker.error(f'Error happened. Validator service returned this: {e}')
+        except requests.ConnectionError as e:
+            self._speaker.error(f'Validator service is unavailable. {e}')
+        except JSONDecodeError as e:
+            self._speaker.error(f'Validator service returned unreadable answer. {e}')
 
     def _send_to_validation(self, validation_method, asset, task_id) -> Optional[Dict[str, Any]]:
         self._check_settings()
@@ -96,31 +97,15 @@ class ValidationManager:
             'id': task_id,
             'type': validation_method.value
         }
-        try:
-            response = self._request(ADD_TASK_URL, data)
-        except URLError:
-            self._speaker.error('Validator service is unavailable')
-            return None
-        else:
-            return self._response_to_dict(response)
+        return self._request(ADD_TASK_URL, data)
 
     def _ask_for_result(self, task_uuid) -> Optional[Dict[str, Any]]:
-        result = None
         self._check_settings()
         data = {
             'id': str(task_uuid),
         }
-        try:
-            response = self._request(GET_TASK_URL, data)
-        except HTTPError as e:
-            self._speaker.error(
-                f'Validation failed. Validator returned this: {e}')
-        except (URLError, ConnectionResetError):
-            self._speaker.error(
-                f'Validator service is unavailable')
-        else:
-            result = self._response_to_dict(response)
-        return result
+
+        return self._request(GET_TASK_URL, data)
 
     def _check_settings(self):
         if settings.VALIDATOR_HOST is None or settings.VALIDATOR_PORT is None:
