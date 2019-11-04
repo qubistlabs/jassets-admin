@@ -11,7 +11,3 @@ def asset_properties_to_dict(asset):
         except (TypeError, json.JSONDecodeError):
             pass
     return result
-
-
-def get_dict_key_by_value(dictionary, value):
-    return next((k for k, v in dictionary.items() if v == value), None)

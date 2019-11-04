@@ -11,7 +11,7 @@ from ..exceptions import ShowError
 
 from .api import is_asset_valid
 from .enums import ValidationMethodEnum, VALIDATION_METHODS_FOR_STATUS
-from .helpers import asset_properties_to_dict, get_dict_key_by_value
+from .helpers import asset_properties_to_dict
 from .models import AssetHistory
 
 
@@ -190,9 +190,12 @@ class TransfersStartedTimestampGetterAdapter(AssetValidationAdapter):
 
 class CoinMarketCapLinksGetterAdapter(AssetValidationAdapter):
 
+    # for each k: v must have v: k
     link_slugs_dict = {
         AssetLinkType.SITE: 'website',
+        'website': AssetLinkType.SITE,
         AssetLinkType.GITHUB: 'source_code',
+        'source_code': AssetLinkType.GITHUB,
     }
 
     @staticmethod
@@ -212,16 +215,17 @@ class CoinMarketCapLinksGetterAdapter(AssetValidationAdapter):
             return False
         objs = []
         for key, values in result.items():
-            link_type = get_dict_key_by_value(self.link_slugs_dict, key)
-            if link_type:
-                for v in values:
-                    objs.append(
-                        AssetLink(
-                            asset_obj=self.asset,
-                            type=link_type.value,
-                            url=v,
-                        )
+            link_type = self.link_slugs_dict.get(key)
+            if not isinstance(link_type, AssetLinkType):
+                continue
+            for v in values:
+                objs.append(
+                    AssetLink(
+                        asset_obj=self.asset,
+                        type=link_type.value,
+                        url=v,
                     )
+                )
         AssetLink.objects.bulk_create(objs)
         return False
 
