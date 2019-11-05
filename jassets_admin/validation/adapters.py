@@ -230,6 +230,18 @@ class CoinMarketCapLinksGetterAdapter(AssetValidationAdapter):
         return False
 
 
+class SymbolAndAddressValidationAdapter(AssetValidationAdapter):
+    @staticmethod
+    def get_validation_method():
+        return ValidationMethodEnum.SYMBOL_AND_ADDRESS
+
+    def get_data(self):
+        return [
+            self.asset.symbol,
+            self.asset.address,
+        ]
+
+
 ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
     ValidationMethodEnum.GAS_AMOUNT: GasAmountAssetValidationAdapter,
     ValidationMethodEnum.TOTAL_SUPPLY: TotalSupplyAssetValidationAdapter,
@@ -240,4 +252,5 @@ ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
     ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP: TransfersStartedTimestampValidationAdapter,
     ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP_GETTER: TransfersStartedTimestampGetterAdapter,
     ValidationMethodEnum.COINMARKETCAP_LINK_GETTER: CoinMarketCapLinksGetterAdapter,
+    ValidationMethodEnum.SYMBOL_AND_ADDRESS: SymbolAndAddressValidationAdapter,
 }

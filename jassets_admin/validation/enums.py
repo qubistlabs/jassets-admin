@@ -20,6 +20,7 @@ class ValidationMethodEnum(Enum):
     TRANSFERS_STARTED_TIMESTAMP = 'transfers_started_timestamp'
     TRANSFERS_STARTED_TIMESTAMP_GETTER = 'transfers_started_timestamp_getter'
     COINMARKETCAP_LINK_GETTER = 'coinmarketcap_link_getter'
+    SYMBOL_AND_ADDRESS = 'symbol_and_address'
 
 
 VALIDATION_METHOD_ACTION_NAME = {
@@ -31,6 +32,7 @@ VALIDATION_METHOD_ACTION_NAME = {
     ValidationMethodEnum.DEPLOYMENT_BLOCK: 'Validate deployment block number',
     ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP: 'Validate transfers started timestamp',
     ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP_GETTER: 'Fill transfers started timestamp',
+    ValidationMethodEnum.SYMBOL_AND_ADDRESS: 'Validate asset symbol and address',
 }
 
 VALIDATION_METHODS_FOR_STATUS = {
@@ -40,6 +42,7 @@ VALIDATION_METHODS_FOR_STATUS = {
     ValidationMethodEnum.CIRCULATING_SUPPLY: 'Circulating supply',
     ValidationMethodEnum.DEPLOYMENT_BLOCK: 'Deployment block number',
     ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP: 'Transfers started timestamp',
+    ValidationMethodEnum.SYMBOL_AND_ADDRESS: 'Symbol and address',
 }
 
 
