@@ -1,0 +1,12 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <p>URL will be collected for these assets:</p>
+    <ul>{{ items|unordered_list }}</ul>
+    <input type="hidden" name="action" value="collect_links" />
+    <input type="submit" name="apply" value="Save" />
+</form>
+{% endblock %}

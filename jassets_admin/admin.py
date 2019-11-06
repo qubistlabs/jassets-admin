@@ -1,7 +1,8 @@
 from django.contrib import admin
+from django.contrib.admin import TabularInline
 
-from .admin_actions import get_validation_actions
-from .models import TradingPair, Platform, Asset, Exchange
+from .validation.admin_actions import get_validation_actions, collect_links
+from .models import TradingPair, Platform, Asset, Exchange, AssetLink
 from .files.admin import AssetAttachmentInline
 
 
@@ -27,6 +28,20 @@ class PlatformAdmin(BaseModelAdmin):
         'main_asset_obj__type',
         'main_asset_obj__is_active',
     )
+
+
+class AssetLinkAdmin(BaseModelAdmin):
+    list_display = (
+        'id',
+        'asset_obj',
+        'type',
+        'url',
+    )
+
+
+class AssetLinkInline(TabularInline):
+    model = AssetLink
+    extra = 1
 
 
 class AssetAdmin(BaseModelAdmin):
@@ -63,10 +78,11 @@ class AssetAdmin(BaseModelAdmin):
         'updated',
     )
 
-    actions = list(get_validation_actions())
+    actions = [collect_links] + get_validation_actions()
 
     inlines = [
         AssetAttachmentInline,
+        AssetLinkInline,
     ]
 
 
@@ -99,6 +115,7 @@ class TradingPairAdmin(BaseModelAdmin):
 
 
 admin.site.register(Platform, PlatformAdmin)
+admin.site.register(AssetLink, AssetLinkAdmin)
 admin.site.register(Asset, AssetAdmin)
 admin.site.register(Exchange, ExchangeAdmin)
 admin.site.register(TradingPair, TradingPairAdmin)

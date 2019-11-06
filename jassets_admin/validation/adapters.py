@@ -5,19 +5,23 @@ from abc import ABC, abstractmethod
 from typing import Dict, Type
 from django.conf import settings
 
+from ..enums import AssetLinkType
+from ..models import AssetLink
 from ..exceptions import ShowError
 
 from .api import is_asset_valid
 from .enums import ValidationMethodEnum, VALIDATION_METHODS_FOR_STATUS
-from .helpers import asset_properties_to_dict
+from .helpers import asset_properties_to_dict, create_bidirectional_dict
 from .models import AssetHistory
 
 
 class AssetValidationAdapter(ABC):
 
-    def __init__(self, asset):
+    def __init__(self, asset, *args, **kwargs):
         self.asset = asset
         self.properties = asset_properties_to_dict(asset)
+        self.args = args
+        self.kwargs = kwargs
 
     @staticmethod
     @abstractmethod
@@ -184,6 +188,45 @@ class TransfersStartedTimestampGetterAdapter(AssetValidationAdapter):
         return True
 
 
+class CoinMarketCapLinksGetterAdapter(AssetValidationAdapter):
+
+    link_slugs_dict = create_bidirectional_dict(
+        website=AssetLinkType.SITE,
+        source_code=AssetLinkType.GITHUB,
+    )
+
+    @staticmethod
+    def get_validation_method():
+        return ValidationMethodEnum.COINMARKETCAP_LINK_GETTER
+
+    def get_data(self):
+        link_types = (AssetLinkType(t) for t in self.args)
+        link_slugs = [self.link_slugs_dict[k] for k in link_types if k in self.link_slugs_dict]
+        return [
+            self.asset.symbol,
+            link_slugs,
+        ]
+
+    def modify_asset(self, result, message) -> bool:
+        if result is None:
+            return False
+        objs = []
+        for key, values in result.items():
+            link_type = self.link_slugs_dict.get(key)
+            if not isinstance(link_type, AssetLinkType):
+                continue
+            for v in values:
+                objs.append(
+                    AssetLink(
+                        asset_obj=self.asset,
+                        type=link_type.value,
+                        url=v,
+                    )
+                )
+        AssetLink.objects.bulk_create(objs)
+        return False
+
+
 ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
     ValidationMethodEnum.GAS_AMOUNT: GasAmountAssetValidationAdapter,
     ValidationMethodEnum.TOTAL_SUPPLY: TotalSupplyAssetValidationAdapter,
@@ -193,4 +236,5 @@ ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
     ValidationMethodEnum.DEPLOYMENT_BLOCK: DeploymentBlockValidationAdapter,
     ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP: TransfersStartedTimestampValidationAdapter,
     ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP_GETTER: TransfersStartedTimestampGetterAdapter,
+    ValidationMethodEnum.COINMARKETCAP_LINK_GETTER: CoinMarketCapLinksGetterAdapter,
 }

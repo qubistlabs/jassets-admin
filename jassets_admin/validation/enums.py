@@ -1,5 +1,7 @@
 from enum import Enum
 
+from jassets_admin.enums import EnumWithChoices
+
 
 class TaskState(Enum):
     queued = "queued"
@@ -17,6 +19,7 @@ class ValidationMethodEnum(Enum):
     DEPLOYMENT_BLOCK = 'deployment_block'
     TRANSFERS_STARTED_TIMESTAMP = 'transfers_started_timestamp'
     TRANSFERS_STARTED_TIMESTAMP_GETTER = 'transfers_started_timestamp_getter'
+    COINMARKETCAP_LINK_GETTER = 'coinmarketcap_link_getter'
 
 
 VALIDATION_METHOD_ACTION_NAME = {
@@ -48,3 +51,12 @@ class ValidationResultEnum(Enum):
     @classmethod
     def choices(cls):
         return tuple((i.name, i.value) for i in cls)
+
+
+class AssetLinkSource(EnumWithChoices):
+    COINMARKETCAP = 'coinmarketcap'
+
+
+ASSET_LINK_SOURCE_TO_METHOD = {
+    AssetLinkSource.COINMARKETCAP: ValidationMethodEnum.COINMARKETCAP_LINK_GETTER,
+}
