@@ -11,7 +11,7 @@ from ..exceptions import ShowError
 
 from .api import is_asset_valid
 from .enums import ValidationMethodEnum, VALIDATION_METHODS_FOR_STATUS
-from .helpers import asset_properties_to_dict
+from .helpers import asset_properties_to_dict, create_bidirectional_dict
 from .models import AssetHistory
 
 
@@ -190,13 +190,10 @@ class TransfersStartedTimestampGetterAdapter(AssetValidationAdapter):
 
 class CoinMarketCapLinksGetterAdapter(AssetValidationAdapter):
 
-    # for each k: v must have v: k
-    link_slugs_dict = {
-        AssetLinkType.SITE: 'website',
-        'website': AssetLinkType.SITE,
-        AssetLinkType.GITHUB: 'source_code',
-        'source_code': AssetLinkType.GITHUB,
-    }
+    link_slugs_dict = create_bidirectional_dict(
+        website=AssetLinkType.SITE,
+        source_code=AssetLinkType.GITHUB,
+    )
 
     @staticmethod
     def get_validation_method():
@@ -241,6 +238,17 @@ class SymbolAndAddressValidationAdapter(AssetValidationAdapter):
             self.asset.address,
         ]
 
+class ContractMethodsValidationAdapter(AssetValidationAdapter):
+    @staticmethod
+    def get_validation_method():
+        return ValidationMethodEnum.CONTRACT_METHODS
+
+    def get_data(self):
+        return [
+            settings.ETH_NODE,
+            self.asset.address,
+        ]
+
 
 ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
     ValidationMethodEnum.GAS_AMOUNT: GasAmountAssetValidationAdapter,
@@ -253,4 +261,5 @@ ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
     ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP_GETTER: TransfersStartedTimestampGetterAdapter,
     ValidationMethodEnum.COINMARKETCAP_LINK_GETTER: CoinMarketCapLinksGetterAdapter,
     ValidationMethodEnum.SYMBOL_AND_ADDRESS: SymbolAndAddressValidationAdapter,
+    ValidationMethodEnum.CONTRACT_METHODS: ContractMethodsValidationAdapter,
 }
