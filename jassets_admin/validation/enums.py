@@ -17,6 +17,7 @@ class ValidationMethodEnum(Enum):
     CIRCULATING_SUPPLY = 'circulating_supply'
     ALL_SUPPLY_TYPES = 'all_supply_types'
     DEPLOYMENT_BLOCK = 'deployment_block'
+    DEPLOYMENT_TIMESTAMP = 'deployment_timestamp'
     TRANSFERS_STARTED_TIMESTAMP = 'transfers_started_timestamp'
     TRANSFERS_STARTED_TIMESTAMP_GETTER = 'transfers_started_timestamp_getter'
     COINMARKETCAP_LINK_GETTER = 'coinmarketcap_link_getter'
@@ -35,6 +36,7 @@ VALIDATION_METHOD_ACTION_NAME = {
     ValidationMethodEnum.CIRCULATING_SUPPLY: 'Validate circulating supply',
     ValidationMethodEnum.ALL_SUPPLY_TYPES: 'Validate all supply types',
     ValidationMethodEnum.DEPLOYMENT_BLOCK: 'Validate deployment block number',
+    ValidationMethodEnum.DEPLOYMENT_TIMESTAMP: 'Validate deployment timestamp',
     ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP: 'Validate transfers started timestamp',
     ValidationMethodEnum.SYMBOL_AND_ADDRESS: 'Validate asset symbol and address',
     ValidationMethodEnum.CONTRACT_METHODS: 'Validate contract methods and their signatures',
@@ -49,6 +51,7 @@ VALIDATION_METHODS_FOR_STATUS = {
     ValidationMethodEnum.MAX_SUPPLY: 'Max supply',
     ValidationMethodEnum.CIRCULATING_SUPPLY: 'Circulating supply',
     ValidationMethodEnum.DEPLOYMENT_BLOCK: 'Deployment block number',
+    ValidationMethodEnum.DEPLOYMENT_TIMESTAMP: 'Deployment timestamp',
     ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP: 'Transfers started timestamp',
     ValidationMethodEnum.SYMBOL_AND_ADDRESS: 'Symbol and address',
     ValidationMethodEnum.CONTRACT_METHODS: 'Contract methods',
