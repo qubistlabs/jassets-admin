@@ -23,6 +23,8 @@ class ValidationMethodEnum(Enum):
     SYMBOL_AND_ADDRESS = 'symbol_and_address'
     CONTRACT_METHODS = 'contract_methods'
     DECIMALS = 'decimals'
+    NAME = 'name'
+    DESCRIPTION = 'description'
 
 
 VALIDATION_METHOD_ACTION_NAME = {
@@ -37,6 +39,8 @@ VALIDATION_METHOD_ACTION_NAME = {
     ValidationMethodEnum.SYMBOL_AND_ADDRESS: 'Validate asset symbol and address',
     ValidationMethodEnum.CONTRACT_METHODS: 'Validate contract methods and their signatures',
     ValidationMethodEnum.DECIMALS: 'Validate asset decimals',
+    ValidationMethodEnum.NAME: 'Validate asset name',
+    ValidationMethodEnum.DESCRIPTION: 'Validate asset description',
 }
 
 VALIDATION_METHODS_FOR_STATUS = {
@@ -49,6 +53,8 @@ VALIDATION_METHODS_FOR_STATUS = {
     ValidationMethodEnum.SYMBOL_AND_ADDRESS: 'Symbol and address',
     ValidationMethodEnum.CONTRACT_METHODS: 'Contract methods',
     ValidationMethodEnum.DECIMALS: 'Decimals',
+    ValidationMethodEnum.NAME: 'Name',
+    ValidationMethodEnum.DESCRIPTION: 'Description',
 }
 
 

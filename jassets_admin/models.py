@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from django.contrib.postgres.fields import JSONField
 from django.db import models
@@ -69,7 +69,7 @@ class Asset(BaseAsset):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        self.updated = datetime.now()
+        self.updated = datetime.now(tz=timezone.utc)
         super().save(force_insert, force_update, using, update_fields)
 
 
