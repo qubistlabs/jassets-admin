@@ -1,7 +1,7 @@
-import datetime
 import json
 
 from abc import ABC, abstractmethod
+from datetime import datetime, timezone
 from typing import Dict, Type
 from django.conf import settings
 
@@ -45,7 +45,7 @@ class AssetValidationAdapter(ABC):
         validation_results = last_history_item.validation_results_dict if last_history_item else {}
         history_entry = AssetHistory.from_asset(self.asset)
         history_entry.result_message = message
-        history_entry.validation_time = datetime.datetime.now()
+        history_entry.validation_time = datetime.now(tz=timezone.utc)
         self.modify_validation_results_dict(validation_results, result)
         history_entry.is_valid = all(
             v is True for k, v in validation_results.items()
@@ -264,6 +264,30 @@ class DecimalsValidationAdapter(AssetValidationAdapter):
         ]
 
 
+class NameValidationAdapter(AssetValidationAdapter):
+    @staticmethod
+    def get_validation_method():
+        return ValidationMethodEnum.NAME
+
+    def get_data(self):
+        return [
+            self.asset.symbol,
+            self.asset.name,
+        ]
+
+
+class DescriptionValidationAdapter(AssetValidationAdapter):
+    @staticmethod
+    def get_validation_method():
+        return ValidationMethodEnum.DESCRIPTION
+
+    def get_data(self):
+        return [
+            self.asset.symbol,
+            self.asset.description,
+        ]
+
+
 ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
     ValidationMethodEnum.GAS_AMOUNT: GasAmountAssetValidationAdapter,
     ValidationMethodEnum.TOTAL_SUPPLY: TotalSupplyAssetValidationAdapter,
@@ -277,4 +301,6 @@ ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
     ValidationMethodEnum.SYMBOL_AND_ADDRESS: SymbolAndAddressValidationAdapter,
     ValidationMethodEnum.CONTRACT_METHODS: ContractMethodsValidationAdapter,
     ValidationMethodEnum.DECIMALS: DecimalsValidationAdapter,
+    ValidationMethodEnum.NAME: NameValidationAdapter,
+    ValidationMethodEnum.DESCRIPTION: DescriptionValidationAdapter,
 }

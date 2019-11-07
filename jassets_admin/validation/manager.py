@@ -81,7 +81,11 @@ class ValidationManager:
     def _request(self, url, data):
         """ Make request """
         try:
-            return requests.post(url=url, json=data).json()
+            response = requests.post(url=url, json=data)
+            if response.status_code == requests.codes.ok:
+                return response.json()
+            else:
+                response.raise_for_status()
         except requests.HTTPError as e:
             self._speaker.error(f'Error happened. Validator service returned this: {e}')
         except requests.ConnectionError as e:
