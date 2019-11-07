@@ -238,6 +238,7 @@ class SymbolAndAddressValidationAdapter(AssetValidationAdapter):
             self.asset.address,
         ]
 
+
 class ContractMethodsValidationAdapter(AssetValidationAdapter):
     @staticmethod
     def get_validation_method():
@@ -247,6 +248,19 @@ class ContractMethodsValidationAdapter(AssetValidationAdapter):
         return [
             settings.ETH_NODE,
             self.asset.address,
+        ]
+
+
+class DecimalsValidationAdapter(AssetValidationAdapter):
+    @staticmethod
+    def get_validation_method():
+        return ValidationMethodEnum.DECIMALS
+
+    def get_data(self):
+        return [
+            settings.ETH_NODE,
+            self.asset.address,
+            self.properties.get('decimals'),
         ]
 
 
@@ -262,4 +276,5 @@ ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
     ValidationMethodEnum.COINMARKETCAP_LINK_GETTER: CoinMarketCapLinksGetterAdapter,
     ValidationMethodEnum.SYMBOL_AND_ADDRESS: SymbolAndAddressValidationAdapter,
     ValidationMethodEnum.CONTRACT_METHODS: ContractMethodsValidationAdapter,
+    ValidationMethodEnum.DECIMALS: DecimalsValidationAdapter,
 }

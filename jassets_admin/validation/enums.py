@@ -22,6 +22,7 @@ class ValidationMethodEnum(Enum):
     COINMARKETCAP_LINK_GETTER = 'coinmarketcap_link_getter'
     SYMBOL_AND_ADDRESS = 'symbol_and_address'
     CONTRACT_METHODS = 'contract_methods'
+    DECIMALS = 'decimals'
 
 
 VALIDATION_METHOD_ACTION_NAME = {
@@ -35,6 +36,7 @@ VALIDATION_METHOD_ACTION_NAME = {
     ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP: 'Validate transfers started timestamp',
     ValidationMethodEnum.SYMBOL_AND_ADDRESS: 'Validate asset symbol and address',
     ValidationMethodEnum.CONTRACT_METHODS: 'Validate contract methods and their signatures',
+    ValidationMethodEnum.DECIMALS: 'Validate asset decimals',
 }
 
 VALIDATION_METHODS_FOR_STATUS = {
@@ -46,6 +48,7 @@ VALIDATION_METHODS_FOR_STATUS = {
     ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP: 'Transfers started timestamp',
     ValidationMethodEnum.SYMBOL_AND_ADDRESS: 'Symbol and address',
     ValidationMethodEnum.CONTRACT_METHODS: 'Contract methods',
+    ValidationMethodEnum.DECIMALS: 'Decimals',
 }
 
 
