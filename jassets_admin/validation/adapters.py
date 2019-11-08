@@ -153,6 +153,19 @@ class DeploymentBlockValidationAdapter(AssetValidationAdapter):
         ]
 
 
+class DeploymentTimestampValidationAdapter(AssetValidationAdapter):
+    @staticmethod
+    def get_validation_method():
+        return ValidationMethodEnum.DEPLOYMENT_TIMESTAMP
+
+    def get_data(self):
+        return [
+            settings.ETH_NODE,
+            self.asset.address,
+            self.properties.get('deployment_timestamp'),
+        ]
+
+
 class TransfersStartedTimestampValidationAdapter(AssetValidationAdapter):
     @staticmethod
     def get_validation_method():
@@ -295,6 +308,7 @@ ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
     ValidationMethodEnum.CIRCULATING_SUPPLY: CirculatingSupplyAssetValidationAdapter,
     ValidationMethodEnum.ALL_SUPPLY_TYPES: AllSupplyTypesAssetValidationAdapter,
     ValidationMethodEnum.DEPLOYMENT_BLOCK: DeploymentBlockValidationAdapter,
+    ValidationMethodEnum.DEPLOYMENT_TIMESTAMP: DeploymentTimestampValidationAdapter,
     ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP: TransfersStartedTimestampValidationAdapter,
     ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP_GETTER: TransfersStartedTimestampGetterAdapter,
     ValidationMethodEnum.COINMARKETCAP_LINK_GETTER: CoinMarketCapLinksGetterAdapter,
