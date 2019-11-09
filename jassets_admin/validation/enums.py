@@ -21,6 +21,7 @@ class ValidationMethodEnum(Enum):
     TRANSFERS_STARTED_TIMESTAMP = 'transfers_started_timestamp'
     TRANSFERS_STARTED_TIMESTAMP_GETTER = 'transfers_started_timestamp_getter'
     COINMARKETCAP_LINK_GETTER = 'coinmarketcap_link_getter'
+    ETHERSCAN_LINK_GETTER = 'etherscan_link_getter'
     SYMBOL_AND_ADDRESS = 'symbol_and_address'
     CONTRACT_METHODS = 'contract_methods'
     DECIMALS = 'decimals'
@@ -73,8 +74,10 @@ class ValidationResultEnum(Enum):
 
 class AssetLinkSource(EnumWithChoices):
     COINMARKETCAP = 'coinmarketcap'
+    ETHERSCAN = 'etherscan'
 
 
 ASSET_LINK_SOURCE_TO_METHOD = {
     AssetLinkSource.COINMARKETCAP: ValidationMethodEnum.COINMARKETCAP_LINK_GETTER,
+    AssetLinkSource.ETHERSCAN: ValidationMethodEnum.ETHERSCAN_LINK_GETTER,
 }
