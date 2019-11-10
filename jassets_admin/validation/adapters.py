@@ -201,22 +201,15 @@ class TransfersStartedTimestampGetterAdapter(AssetValidationAdapter):
         return True
 
 
-class CoinMarketCapLinksGetterAdapter(AssetValidationAdapter):
+class LinksGetterAdapter(AssetValidationAdapter, ABC):
 
-    link_slugs_dict = create_bidirectional_dict(
-        website=AssetLinkType.SITE,
-        source_code=AssetLinkType.GITHUB,
-    )
-
-    @staticmethod
-    def get_validation_method():
-        return ValidationMethodEnum.COINMARKETCAP_LINK_GETTER
+    link_slugs_dict: Dict = {}
 
     def get_data(self):
         link_types = (AssetLinkType(t) for t in self.args)
         link_slugs = [self.link_slugs_dict[k] for k in link_types if k in self.link_slugs_dict]
         return [
-            self.asset.symbol,
+            self.get_asset_identifier(),
             link_slugs,
         ]
 
@@ -238,6 +231,42 @@ class CoinMarketCapLinksGetterAdapter(AssetValidationAdapter):
                 )
         AssetLink.objects.bulk_create(objs)
         return False
+
+    @abstractmethod
+    def get_asset_identifier(self):
+        """ Asset identifier """
+
+
+class CoinMarketCapLinksGetterAdapter(LinksGetterAdapter):
+
+    link_slugs_dict = create_bidirectional_dict(
+        website=AssetLinkType.SITE,
+        source_code=AssetLinkType.GITHUB,
+    )
+
+    @staticmethod
+    def get_validation_method():
+        return ValidationMethodEnum.COINMARKETCAP_LINK_GETTER
+
+    def get_asset_identifier(self):
+        return self.asset.symbol
+
+
+class EtherscanLinksGetterAdapter(LinksGetterAdapter):
+
+    link_slugs_dict = create_bidirectional_dict(
+        site=AssetLinkType.SITE,
+        Binance=AssetLinkType.BINANCE,
+        CoinMarketCap=AssetLinkType.COINMARKETCAP,
+        Github=AssetLinkType.GITHUB,
+    )
+
+    @staticmethod
+    def get_validation_method():
+        return ValidationMethodEnum.ETHERSCAN_LINK_GETTER
+
+    def get_asset_identifier(self):
+        return self.asset.address
 
 
 class SymbolAndAddressValidationAdapter(AssetValidationAdapter):
@@ -312,6 +341,7 @@ ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
     ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP: TransfersStartedTimestampValidationAdapter,
     ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP_GETTER: TransfersStartedTimestampGetterAdapter,
     ValidationMethodEnum.COINMARKETCAP_LINK_GETTER: CoinMarketCapLinksGetterAdapter,
+    ValidationMethodEnum.ETHERSCAN_LINK_GETTER: EtherscanLinksGetterAdapter,
     ValidationMethodEnum.SYMBOL_AND_ADDRESS: SymbolAndAddressValidationAdapter,
     ValidationMethodEnum.CONTRACT_METHODS: ContractMethodsValidationAdapter,
     ValidationMethodEnum.DECIMALS: DecimalsValidationAdapter,
