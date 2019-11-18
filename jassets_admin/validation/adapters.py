@@ -330,6 +330,28 @@ class DescriptionValidationAdapter(AssetValidationAdapter):
         ]
 
 
+class AllSupplyTypesGetterAdapter(AssetValidationAdapter):
+    @staticmethod
+    def get_validation_method():
+        return ValidationMethodEnum.ALL_SUPPLY_TYPES_GETTER
+
+    def get_data(self):
+        return [
+            self.asset.symbol,
+        ]
+
+    def modify_asset(self, result, message) -> bool:
+        default_value = None
+        if not isinstance(result, dict):
+            default_value = result
+            result = {}
+        if self.asset.properties is None:
+            self.asset.properties = {}
+        for attr in ('total_supply', 'max_supply', 'circulating_supply'):
+            self.asset.properties[attr] = result.get(attr, default_value)
+        return True
+
+
 ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
     ValidationMethodEnum.GAS_AMOUNT: GasAmountAssetValidationAdapter,
     ValidationMethodEnum.TOTAL_SUPPLY: TotalSupplyAssetValidationAdapter,
@@ -347,4 +369,5 @@ ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
     ValidationMethodEnum.DECIMALS: DecimalsValidationAdapter,
     ValidationMethodEnum.NAME: NameValidationAdapter,
     ValidationMethodEnum.DESCRIPTION: DescriptionValidationAdapter,
+    ValidationMethodEnum.ALL_SUPPLY_TYPES_GETTER: AllSupplyTypesGetterAdapter,
 }

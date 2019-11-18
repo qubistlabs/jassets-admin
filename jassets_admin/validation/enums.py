@@ -16,6 +16,7 @@ class ValidationMethodEnum(Enum):
     MAX_SUPPLY = 'max_supply'
     CIRCULATING_SUPPLY = 'circulating_supply'
     ALL_SUPPLY_TYPES = 'all_supply_types'
+    ALL_SUPPLY_TYPES_GETTER = 'all_supply_types_getter'
     DEPLOYMENT_BLOCK = 'deployment_block'
     DEPLOYMENT_TIMESTAMP = 'deployment_timestamp'
     TRANSFERS_STARTED_TIMESTAMP = 'transfers_started_timestamp'
@@ -31,6 +32,8 @@ class ValidationMethodEnum(Enum):
 
 VALIDATION_METHOD_ACTION_NAME = {
     ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP_GETTER: 'Fill transfers started timestamp',
+    ValidationMethodEnum.ALL_SUPPLY_TYPES_GETTER: (
+        'Fill max supply, total supply, circulating supply'),
     ValidationMethodEnum.GAS_AMOUNT: 'Validate gas amount',
     ValidationMethodEnum.TOTAL_SUPPLY: 'Validate total supply',
     ValidationMethodEnum.MAX_SUPPLY: 'Validate max supply',
