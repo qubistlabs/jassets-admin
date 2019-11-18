@@ -4,13 +4,13 @@ from django.contrib.auth.models import User
 
 
 ADMIN_LOGIN = getenv('ADMIN_LOGIN', 'admin')
-ADMIN_PASSWORD = getenv('ADMIN_PASSWORD', 'admin')
+ADMIN_PASSWORD = getenv('ADMIN_PASSWORD')
 ADMIN_EMAIL = getenv('ADMIN_EMAIL')
 
-if ADMIN_LOGIN is None or ADMIN_PASSWORD is None:
+if ADMIN_PASSWORD is None:
     raise Exception(
-        'Admin credentials not set. '
-        'Please specify environment variables ADMIN_LOGIN and ADMIN_PASSWORD')
+        'Admin credentials not set. Please specify environment variable ADMIN_PASSWORD'
+    )
 
 admin_exists = User.objects.filter(username=ADMIN_LOGIN).exists()
 

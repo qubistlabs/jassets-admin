@@ -63,16 +63,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'jassets_admin.wsgi.application'
 
-POSTGRES_HOST = getenv('POSTGRES_HOST', '0.0.0.0')
+POSTGRES_HOST = getenv('POSTGRES_HOST', 'jassets-postgres')
 POSTGRES_PORT = int(getenv('POSTGRES_PORT', '9432'))
-POSTGRES_USER = getenv('POSTGRES_USER', 'jassets')
+POSTGRES_USER = getenv('POSTGRES_USER', 'postgres')
 POSTGRES_PASSWORD = getenv('POSTGRES_PASSWORD')
 POSTGRES_DB = getenv('POSTGRES_DB', 'jassets')
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': POSTGRES_DB,
+        'USER': POSTGRES_USER,
+        'PASSWORD': POSTGRES_PASSWORD,
+        'HOST': POSTGRES_HOST,
+        'PORT': POSTGRES_PORT,
     },
     'jassets': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -96,5 +100,16 @@ STATIC_URL = '/static/'
 STATIC_ROOT = './static'
 
 
-VALIDATOR_URL = getenv('VALIDATOR_URL')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = getenv('MEDIA_ROOT', './media')
+
+
+VALIDATOR_HOST = getenv('VALIDATOR_HOST')
+VALIDATOR_PORT = getenv('VALIDATOR_PORT')
 VALIDATION_TIMEOUT = getenv('VALIDATION_TIMEOUT', 1)
+ETH_NODE = getenv('ETH_NODE', 'https://main-node.jwallet.network')
+
+AWS_ACCESS_KEY = getenv('AWS_ACCESS_KEY')
+AWS_SECRET_ACCESS_KEY = getenv('AWS_SECRET_ACCESS_KEY')
+AWS_SECRET_TOKEN = getenv('AWS_SECRET_TOKEN')
+AWS_BUCKET_NAME = getenv('AWS_BUCKET_NAME', 'jassets-storage')

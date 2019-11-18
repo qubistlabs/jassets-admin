@@ -1,5 +1,6 @@
-
 from abc import ABC, abstractmethod
+from django.contrib import messages
+from django.core.handlers.wsgi import WSGIRequest
 from loguru import logger
 
 from .exceptions import ShowMessage, ShowWarning, ShowError
@@ -55,3 +56,25 @@ class ExceptionSpeaker(Speaker):
     def error(cls, msg):
         raise ShowError(msg)
 
+
+class LogWrapper:
+    """ Context manager that allow to catch exceptions and turn them to messages """
+    request: WSGIRequest
+
+    def __init__(self, request):
+        self.request = request
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        result = True
+        if exc_type is ShowWarning:
+            messages.warning(self.request, exc_val)
+        elif exc_type is ShowMessage:
+            messages.info(self.request, exc_val)
+        elif exc_type is ShowError:
+            messages.error(self.request, exc_val)
+        elif exc_type:
+            result = False
+        return result
