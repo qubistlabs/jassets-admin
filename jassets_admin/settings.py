@@ -29,6 +29,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django_json_widget',
+
     'jassets_admin',
     'jassets_admin.validation',
 ]
@@ -113,3 +116,19 @@ AWS_ACCESS_KEY = getenv('AWS_ACCESS_KEY')
 AWS_SECRET_ACCESS_KEY = getenv('AWS_SECRET_ACCESS_KEY')
 AWS_SECRET_TOKEN = getenv('AWS_SECRET_TOKEN')
 AWS_BUCKET_NAME = getenv('AWS_BUCKET_NAME', 'jassets-storage')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+    },
+}
