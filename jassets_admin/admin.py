@@ -1,5 +1,8 @@
 from django.contrib import admin
 from django.contrib.admin import TabularInline
+from django.contrib.postgres import fields
+
+from django_json_widget.widgets import JSONEditorWidget
 
 from .validation.admin_actions import get_validation_actions, collect_links
 from .models import TradingPair, Platform, Asset, Exchange, AssetLink
@@ -45,6 +48,10 @@ class AssetLinkInline(TabularInline):
 
 
 class AssetAdmin(BaseModelAdmin):
+    formfield_overrides = {
+        fields.JSONField: {'widget': JSONEditorWidget},
+    }
+
     list_display = (
         'id',
         'uuid',

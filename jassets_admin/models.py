@@ -28,6 +28,7 @@ class Platform(JAssetsModel):
 
     class Meta:
         db_table = 'platforms'
+        managed = False
 
 
 class BaseAsset(JAssetsModel):
@@ -56,6 +57,7 @@ class Asset(BaseAsset):
 
     class Meta:
         db_table = 'assets'
+        managed = False
 
     @property
     def validation_status(self):
@@ -84,6 +86,7 @@ class Exchange(JAssetsModel):
 
     class Meta:
         db_table = 'exchange'
+        managed = False
 
 
 class TradingPair(JAssetsModel):
@@ -101,6 +104,7 @@ class TradingPair(JAssetsModel):
     class Meta:
         db_table = 'trading_pairs'
         unique_together = ('base_asset_obj', 'quote_asset_obj', 'exchange_obj')
+        managed = False
 
     def __str__(self):
         return f'{self.symbol}'
@@ -118,6 +122,7 @@ class AssetAttachment(JAssetsModel):
 
     class Meta:
         db_table = 'asset_attachment'
+        managed = False
 
     def __str__(self):
         return f'File {self.name or ""} {self.path}'
@@ -134,6 +139,7 @@ class AssetLink(JAssetsModel):
     url = models.CharField(max_length=150)
 
     class Meta:
+        managed = False
         db_table = 'asset_links'
 
     def __str__(self):
