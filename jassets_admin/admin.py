@@ -123,7 +123,7 @@ class TradingPairAdmin(BaseModelAdmin):
         'exchange_obj',
     )
     search_fields = (
-        'symbol'
+        'symbol',
     )
 
 
