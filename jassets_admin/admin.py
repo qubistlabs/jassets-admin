@@ -119,6 +119,12 @@ class TradingPairAdmin(BaseModelAdmin):
         'quote_asset_obj',
         'exchange_obj',
     )
+    list_filter = (
+        'exchange_obj',
+    )
+    search_fields = (
+        'symbol'
+    )
 
 
 admin.site.register(Platform, PlatformAdmin)
