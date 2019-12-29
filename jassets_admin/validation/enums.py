@@ -84,3 +84,9 @@ ASSET_LINK_SOURCE_TO_METHOD = {
     AssetLinkSource.COINMARKETCAP: ValidationMethodEnum.COINMARKETCAP_LINK_GETTER,
     AssetLinkSource.ETHERSCAN: ValidationMethodEnum.ETHERSCAN_LINK_GETTER,
 }
+
+
+class ValidatorErrors(Enum):
+    NO_TASK = (400, 'Task not found')
+
+

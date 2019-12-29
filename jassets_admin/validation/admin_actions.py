@@ -20,8 +20,9 @@ class ValidationAction:
     def __call__(self, modeladmin, request, queryset):
         manager = ValidationManager()
         manager.set_speaker(ExceptionSpeaker)
+        log_wrapper = LogWrapper(request)
         for asset in queryset:
-            with LogWrapper(request):
+            with log_wrapper:
                 manager.validate(self.validation_method, asset)
 
 
@@ -49,8 +50,9 @@ def collect_links(modeladmin, request, queryset):
         if form.is_valid():
             manager = ValidationManager()
             manager.set_speaker(ExceptionSpeaker)
+            log_wrapper = LogWrapper(request)
             for asset in queryset:
-                with LogWrapper(request):
+                with log_wrapper:
                     method = ASSET_LINK_SOURCE_TO_METHOD[
                         AssetLinkSource(form.cleaned_data['source'])
                     ]

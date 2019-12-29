@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from collections import Counter
+
 from django.contrib import messages
 from django.core.handlers.wsgi import WSGIRequest
 from loguru import logger
@@ -63,6 +65,9 @@ class LogWrapper:
 
     def __init__(self, request):
         self.request = request
+        self._warning_list = []
+        self._message_list = []
+        self._error_list = []
 
     def __enter__(self):
         pass
@@ -70,11 +75,24 @@ class LogWrapper:
     def __exit__(self, exc_type, exc_val, exc_tb):
         result = True
         if exc_type is ShowWarning:
-            messages.warning(self.request, exc_val)
+            self._warning_list.append(str(exc_val))
         elif exc_type is ShowMessage:
-            messages.info(self.request, exc_val)
+            self._message_list.append(str(exc_val))
         elif exc_type is ShowError:
-            messages.error(self.request, exc_val)
+            self._error_list.append(str(exc_val))
         elif exc_type:
             result = False
         return result
+
+    def __del__(self):
+        self._group_and_show(self._warning_list, messages.warning)
+        self._group_and_show(self._message_list, messages.info)
+        self._group_and_show(self._error_list, messages.error)
+
+    def _group_and_show(self, collection, function):
+        for msg, n in Counter(collection).items():
+            if n == 1:
+                text = msg
+            else:
+                text = f'{msg} [{n}]'
+            function(self.request, text)
