@@ -352,8 +352,28 @@ class AllSupplyTypesGetterAdapter(AssetValidationAdapter):
         return True
 
 
+class GasAmountGetterAdapter(AssetValidationAdapter):
+    @staticmethod
+    def get_validation_method():
+        return ValidationMethodEnum.GAS_AMOUNT_GETTER
+
+    def get_data(self):
+        return [
+            settings.ETH_NODE,
+            self.asset.address,
+            self.properties.get('deployment_block'),
+        ]
+
+    def modify_asset(self, result, message) -> bool:
+        if self.asset.properties is None:
+            self.asset.properties = {}
+        self.asset.properties['static_gas_amount'] = result
+        return True
+
+
 ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
     ValidationMethodEnum.GAS_AMOUNT: GasAmountAssetValidationAdapter,
+    ValidationMethodEnum.GAS_AMOUNT_GETTER: GasAmountGetterAdapter,
     ValidationMethodEnum.TOTAL_SUPPLY: TotalSupplyAssetValidationAdapter,
     ValidationMethodEnum.MAX_SUPPLY: MaxSupplyAssetValidationAdapter,
     ValidationMethodEnum.CIRCULATING_SUPPLY: CirculatingSupplyAssetValidationAdapter,
