@@ -34,10 +34,9 @@ class AssetValidationAdapter(ABC):
 
     def store_result(self, result, message):
         """ Save result from validation service """
-        history_entry = self._create_history_entry(result, message)
+        self._create_history_entry(result, message)
         is_modified = self.modify_asset(result, message)
-        if self.asset.is_active != history_entry.is_valid or is_modified:
-            self.asset.is_active = history_entry.is_valid
+        if is_modified:
             self.asset.save()
 
     def _create_history_entry(self, result, message):
