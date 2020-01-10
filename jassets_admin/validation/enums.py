@@ -90,5 +90,3 @@ ASSET_LINK_SOURCE_TO_METHOD = {
 
 class ValidatorErrors(Enum):
     NO_TASK = (400, 'Task not found')
-
-
