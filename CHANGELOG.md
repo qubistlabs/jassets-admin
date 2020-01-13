@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add automatic task scheduling (JASSETS-120)
 - Add CMC volume 24h getter (JASSETS-121)
 
 ### Changed
@@ -19,4 +20,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Better validator error handling and auto-restore.
+- Better validator error handling and auto-restore

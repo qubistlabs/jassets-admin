@@ -5,7 +5,7 @@ Launch script (run.sh) may be invoked in 4 modes depending of `RUNMODE` env var:
 - `app` option is to run main application server
 - `validation_daemon` constantly checks validation results from jassets-validator service. No need to wait for its completion
 - `clear_validation_queue` clears all tasks for validation
-- `test` executes pytest 
+- `test` executes pytest
 
 Normally app must be launched in two processes - in `app` and in `validation_daemon` mode
 
@@ -50,12 +50,12 @@ Available environment variables (all of them are required, especially if there i
 
 - `VALIDATOR_HOST` (default is empty) - host of asset validation service (jassets-validator)
 - `VALIDATOR_PORT` (default is empty) - port of asset validation service (jassets-validator)
-- `VALIDATION_TIMEOUT` (default `1`) - interval in seconds between checks for asset validation results
+- `VALIDATION_TIMEOUT` (default `10`) - interval in seconds between checks for asset validation results
 - `ETH_NODE` (default `https://main-node.jwallet.network`) - ethereum node to perform some validations
 
 #### config for accessing asset files stored in S3
 
 - `AWS_ACCESS_KEY` - Amazon S3 storage access key
-- `AWS_SECRET_ACCESS_KEY` - Amazon S3 storage secret access key 
+- `AWS_SECRET_ACCESS_KEY` - Amazon S3 storage secret access key
 - `AWS_SECRET_TOKEN` - Amazon S3 storage secret token
 - `AWS_BUCKET_NAME` (default `jassets-storage`) - Amazon S3 storage bucket name

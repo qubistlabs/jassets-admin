@@ -1,7 +1,8 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+from django.db.models import Q
 from typing import Union
 from uuid import UUID
 
@@ -50,11 +51,22 @@ class BaseAsset(JAssetsModel):
         abstract = True
 
 
+class AssetManager(models.Manager):
+    def requires_validation(self):
+        update_older_than = datetime.now() - timedelta(days=1)
+        return self.filter(
+            Q(last_scheduled_validation__isnull=True) |
+            Q(last_scheduled_validation__lte=update_older_than)
+        )
+
+
 class Asset(BaseAsset):
     platform_obj = models.ForeignKey(
         "Platform", db_column='platform', null=True, blank=True, on_delete=models.SET_NULL)
     properties = JSONField(null=True, blank=True)
     last_scheduled_validation = models.DateTimeField(null=True, blank=True)
+
+    objects = AssetManager()
 
     class Meta:
         db_table = 'assets'
