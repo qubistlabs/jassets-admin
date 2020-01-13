@@ -370,6 +370,23 @@ class GasAmountGetterAdapter(AssetValidationAdapter):
         return True
 
 
+class CMCVolume24hGetterAdapter(AssetValidationAdapter):
+    @staticmethod
+    def get_validation_method():
+        return ValidationMethodEnum.CMC_VOLUME24H_GETTER
+
+    def get_data(self):
+        return [
+            self.asset.symbol,
+        ]
+
+    def modify_asset(self, result, message) -> bool:
+        if self.asset.properties is None:
+            self.asset.properties = {}
+        self.asset.properties['cmc_volume24h'] = result
+        return True
+
+
 ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
     ValidationMethodEnum.GAS_AMOUNT: GasAmountAssetValidationAdapter,
     ValidationMethodEnum.GAS_AMOUNT_GETTER: GasAmountGetterAdapter,
@@ -389,4 +406,5 @@ ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
     ValidationMethodEnum.NAME: NameValidationAdapter,
     ValidationMethodEnum.DESCRIPTION: DescriptionValidationAdapter,
     ValidationMethodEnum.ALL_SUPPLY_TYPES_GETTER: AllSupplyTypesGetterAdapter,
+    ValidationMethodEnum.CMC_VOLUME24H_GETTER: CMCVolume24hGetterAdapter,
 }

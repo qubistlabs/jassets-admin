@@ -29,12 +29,14 @@ class ValidationMethodEnum(Enum):
     DECIMALS = 'decimals'
     NAME = 'name'
     DESCRIPTION = 'description'
+    CMC_VOLUME24H_GETTER = 'cmc_volume24h_getter'
 
 
 VALIDATION_METHOD_ACTION_NAME = {
     ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP_GETTER: 'Fill transfers started timestamp',
     ValidationMethodEnum.ALL_SUPPLY_TYPES_GETTER: (
         'Fill max supply, total supply, circulating supply'),
+    ValidationMethodEnum.CMC_VOLUME24H_GETTER: 'Fill cmc_volume24h property',
     ValidationMethodEnum.GAS_AMOUNT_GETTER: 'Fill gas amount',
     ValidationMethodEnum.GAS_AMOUNT: 'Validate gas amount',
     ValidationMethodEnum.TOTAL_SUPPLY: 'Validate total supply',
