@@ -54,6 +54,7 @@ class Asset(BaseAsset):
     platform_obj = models.ForeignKey(
         "Platform", db_column='platform', null=True, blank=True, on_delete=models.SET_NULL)
     properties = JSONField(null=True, blank=True)
+    last_scheduled_validation = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = 'assets'
