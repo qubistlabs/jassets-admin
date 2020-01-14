@@ -27,7 +27,7 @@ def schedule_validation():
         manager.validate(ValidationMethodEnum.ALL_SUPPLY_TYPES_GETTER, asset)
         manager.validate(ValidationMethodEnum.CMC_VOLUME24H_GETTER, asset)
 
-        logger.info("Schedule %s validation", asset.symbol)
+        logger.info("Schedule {} validation", asset.symbol)
 
 
 class Command(BaseCommand):
