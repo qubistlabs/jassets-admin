@@ -109,7 +109,7 @@ MEDIA_ROOT = getenv('MEDIA_ROOT', './media')
 
 VALIDATOR_HOST = getenv('VALIDATOR_HOST')
 VALIDATOR_PORT = getenv('VALIDATOR_PORT')
-VALIDATION_TIMEOUT = getenv('VALIDATION_TIMEOUT', 1)
+VALIDATION_TIMEOUT = getenv('VALIDATION_TIMEOUT', 10)
 ETH_NODE = getenv('ETH_NODE', 'https://main-node.jwallet.network')
 
 AWS_ACCESS_KEY = getenv('AWS_ACCESS_KEY')

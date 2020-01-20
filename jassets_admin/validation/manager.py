@@ -8,7 +8,7 @@ from uuid import uuid4
 from ..log_tools import LogSpeaker, Speaker
 
 from .adapters import ADAPTER_MAP
-from .enums import TaskState, ValidationMethodEnum
+from .enums import TaskState, ValidationMethodEnum, ValidatorErrors
 from .models import ValidationQueue
 
 
@@ -65,8 +65,7 @@ class ValidationManager:
             done_task_uuids.append(item.task_uuid)
             adapter = ADAPTER_MAP[ValidationMethodEnum(item.method)](asset_dict[item.asset_uuid])
             adapter.store_result(result, message)
-            self._speaker.info(
-                f'Asset {item.asset_uuid} is valid: {result}')
+            self._speaker.info(f'Asset {item.asset_uuid} result: {result}')
         ValidationQueue.remove(done_task_uuids)
 
     def clear_queue(self):
@@ -87,7 +86,8 @@ class ValidationManager:
             else:
                 response.raise_for_status()
         except requests.HTTPError as e:
-            self._speaker.error(f'Error happened. Validator service returned this: {e}')
+            if not self._handle_http_error(e.response):
+                self._speaker.error(f'Error happened. Validator service returned this: {e}')
         except requests.ConnectionError as e:
             self._speaker.error(f'Validator service is unavailable. {e}')
         except JSONDecodeError as e:
@@ -121,3 +121,23 @@ class ValidationManager:
     def _check_settings(self):
         if settings.VALIDATOR_HOST is None or settings.VALIDATOR_PORT is None:
             self._speaker.error('Validation service host and port must be set')
+
+    def _handle_http_error(self, response) -> bool:
+        """
+        Try to handle error returned from validator
+        Returns True if error handled
+        """
+        key = (response.status_code, response.reason)
+        try:
+            enum_item = ValidatorErrors(key)
+        except ValueError:
+            return False
+        if enum_item == ValidatorErrors.NO_TASK:
+            task_uuid = response.text
+            self._speaker.warning((
+                f"Validator service responded that task with UUID = {task_uuid} not found. "
+                f"Deleting task from queue."
+            ))
+            ValidationQueue.remove([task_uuid])
+            return True
+        return False

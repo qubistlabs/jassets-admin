@@ -34,10 +34,9 @@ class AssetValidationAdapter(ABC):
 
     def store_result(self, result, message):
         """ Save result from validation service """
-        history_entry = self._create_history_entry(result, message)
+        self._create_history_entry(result, message)
         is_modified = self.modify_asset(result, message)
-        if self.asset.is_active != history_entry.is_valid or is_modified:
-            self.asset.is_active = history_entry.is_valid
+        if is_modified:
             self.asset.save()
 
     def _create_history_entry(self, result, message):
@@ -352,8 +351,45 @@ class AllSupplyTypesGetterAdapter(AssetValidationAdapter):
         return True
 
 
+class GasAmountGetterAdapter(AssetValidationAdapter):
+    @staticmethod
+    def get_validation_method():
+        return ValidationMethodEnum.GAS_AMOUNT_GETTER
+
+    def get_data(self):
+        return [
+            settings.ETH_NODE,
+            self.asset.address,
+            self.properties.get('deployment_block'),
+        ]
+
+    def modify_asset(self, result, message) -> bool:
+        if self.asset.properties is None:
+            self.asset.properties = {}
+        self.asset.properties['static_gas_amount'] = result
+        return True
+
+
+class CMCVolume24hGetterAdapter(AssetValidationAdapter):
+    @staticmethod
+    def get_validation_method():
+        return ValidationMethodEnum.CMC_VOLUME24H_GETTER
+
+    def get_data(self):
+        return [
+            self.asset.symbol,
+        ]
+
+    def modify_asset(self, result, message) -> bool:
+        if self.asset.properties is None:
+            self.asset.properties = {}
+        self.asset.properties['cmc_volume24h'] = result
+        return True
+
+
 ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
     ValidationMethodEnum.GAS_AMOUNT: GasAmountAssetValidationAdapter,
+    ValidationMethodEnum.GAS_AMOUNT_GETTER: GasAmountGetterAdapter,
     ValidationMethodEnum.TOTAL_SUPPLY: TotalSupplyAssetValidationAdapter,
     ValidationMethodEnum.MAX_SUPPLY: MaxSupplyAssetValidationAdapter,
     ValidationMethodEnum.CIRCULATING_SUPPLY: CirculatingSupplyAssetValidationAdapter,
@@ -370,4 +406,5 @@ ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
     ValidationMethodEnum.NAME: NameValidationAdapter,
     ValidationMethodEnum.DESCRIPTION: DescriptionValidationAdapter,
     ValidationMethodEnum.ALL_SUPPLY_TYPES_GETTER: AllSupplyTypesGetterAdapter,
+    ValidationMethodEnum.CMC_VOLUME24H_GETTER: CMCVolume24hGetterAdapter,
 }

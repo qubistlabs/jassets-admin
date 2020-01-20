@@ -12,6 +12,7 @@ class TaskState(Enum):
 
 class ValidationMethodEnum(Enum):
     GAS_AMOUNT = 'gas_amount'
+    GAS_AMOUNT_GETTER = 'gas_amount_getter'
     TOTAL_SUPPLY = 'total_supply'
     MAX_SUPPLY = 'max_supply'
     CIRCULATING_SUPPLY = 'circulating_supply'
@@ -28,12 +29,15 @@ class ValidationMethodEnum(Enum):
     DECIMALS = 'decimals'
     NAME = 'name'
     DESCRIPTION = 'description'
+    CMC_VOLUME24H_GETTER = 'cmc_volume24h_getter'
 
 
 VALIDATION_METHOD_ACTION_NAME = {
     ValidationMethodEnum.TRANSFERS_STARTED_TIMESTAMP_GETTER: 'Fill transfers started timestamp',
     ValidationMethodEnum.ALL_SUPPLY_TYPES_GETTER: (
         'Fill max supply, total supply, circulating supply'),
+    ValidationMethodEnum.CMC_VOLUME24H_GETTER: 'Fill cmc_volume24h property',
+    ValidationMethodEnum.GAS_AMOUNT_GETTER: 'Fill gas amount',
     ValidationMethodEnum.GAS_AMOUNT: 'Validate gas amount',
     ValidationMethodEnum.TOTAL_SUPPLY: 'Validate total supply',
     ValidationMethodEnum.MAX_SUPPLY: 'Validate max supply',
@@ -84,3 +88,7 @@ ASSET_LINK_SOURCE_TO_METHOD = {
     AssetLinkSource.COINMARKETCAP: ValidationMethodEnum.COINMARKETCAP_LINK_GETTER,
     AssetLinkSource.ETHERSCAN: ValidationMethodEnum.ETHERSCAN_LINK_GETTER,
 }
+
+
+class ValidatorErrors(Enum):
+    NO_TASK = (400, 'Task not found')
