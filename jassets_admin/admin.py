@@ -40,6 +40,9 @@ class AssetLinkAdmin(BaseModelAdmin):
         'type',
         'url',
     )
+    list_filter = (
+        'asset_obj',
+    )
 
 
 class AssetLinkInline(TabularInline):
