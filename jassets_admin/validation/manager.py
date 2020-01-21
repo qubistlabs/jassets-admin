@@ -50,22 +50,29 @@ class ValidationManager:
             response_data = self._ask_for_result(item.task_uuid)
             if response_data is None:
                 continue
-
-            if response_data['state'] in (TaskState.queued.value, TaskState.running.value):
-                continue
-
-            if response_data['state'] == TaskState.failed.value:
-                result = None
-                message = response_data["result"]
-                self._speaker.error(
-                    f'Validation failed. Validator returned this: {response_data["result"]}')
+            try:
+                state = TaskState(response_data['state'])
+            except ValueError:
+                self._speaker.info(
+                    f"Validator service returned result with unknown "
+                    f"status: {response_data['state']}"
+                )
             else:
-                result = response_data['result']
-                message = ''
-            done_task_uuids.append(item.task_uuid)
-            adapter = ADAPTER_MAP[ValidationMethodEnum(item.method)](asset_dict[item.asset_uuid])
-            adapter.store_result(result, message)
-            self._speaker.info(f'Asset {item.asset_uuid} result: {result}')
+                if state in (TaskState.queued, TaskState.running):
+                    continue
+
+                if state == TaskState.failed:
+                    result = None
+                    message = response_data["result"]
+                    self._speaker.error(
+                        f'Validation failed. Validator returned this: {response_data["result"]}')
+                else:
+                    result = response_data['result']
+                    message = ''
+                done_task_uuids.append(item.task_uuid)
+                adapter = ADAPTER_MAP[ValidationMethodEnum(item.method)](asset_dict[item.asset_uuid])
+                adapter.store_result(result, message, state)
+                self._speaker.info(f'Asset {item.asset_uuid} result: {result}')
         ValidationQueue.remove(done_task_uuids)
 
     def clear_queue(self):

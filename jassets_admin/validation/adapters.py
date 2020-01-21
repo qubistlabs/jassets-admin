@@ -10,7 +10,7 @@ from ..models import AssetLink
 from ..exceptions import ShowError
 
 from .api import is_asset_valid
-from .enums import ValidationMethodEnum, VALIDATION_METHODS_FOR_STATUS
+from .enums import ValidationMethodEnum, VALIDATION_METHODS_FOR_STATUS, TaskState
 from .helpers import asset_properties_to_dict, create_bidirectional_dict
 from .models import AssetHistory
 
@@ -32,12 +32,13 @@ class AssetValidationAdapter(ABC):
     def get_data(self):
         """ Get data for validation service """
 
-    def store_result(self, result, message):
+    def store_result(self, result, message, state):
         """ Save result from validation service """
         self._create_history_entry(result, message)
-        is_modified = self.modify_asset(result, message)
-        if is_modified:
-            self.asset.save()
+        if state == TaskState.done:
+            is_modified = self.modify_asset(result, message)
+            if is_modified:
+                self.asset.save()
 
     def _create_history_entry(self, result, message):
         last_history_item = AssetHistory.get_last(self.asset)
@@ -387,6 +388,54 @@ class CMCVolume24hGetterAdapter(AssetValidationAdapter):
         return True
 
 
+class DecimalsGetterAdapter(AssetValidationAdapter):
+    @staticmethod
+    def get_validation_method():
+        return ValidationMethodEnum.DECIMALS_GETTER
+
+    def get_data(self):
+        return [
+            settings.ETH_NODE,
+            self.asset.address,
+        ]
+
+    def modify_asset(self, result, message) -> bool:
+        if self.asset.properties is None:
+            self.asset.properties = {}
+        self.asset.properties['decimals'] = result
+        return True
+
+
+class NameGetterAdapter(AssetValidationAdapter):
+    @staticmethod
+    def get_validation_method():
+        return ValidationMethodEnum.NAME_GETTER
+
+    def get_data(self):
+        return [
+            self.asset.symbol,
+        ]
+
+    def modify_asset(self, result, message) -> bool:
+        self.asset.name = result
+        return True
+
+
+class DescriptionGetterAdapter(AssetValidationAdapter):
+    @staticmethod
+    def get_validation_method():
+        return ValidationMethodEnum.DESCRIPTION_GETTER
+
+    def get_data(self):
+        return [
+            self.asset.symbol,
+        ]
+
+    def modify_asset(self, result, message) -> bool:
+        self.asset.description = result
+        return True
+
+
 ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
     ValidationMethodEnum.GAS_AMOUNT: GasAmountAssetValidationAdapter,
     ValidationMethodEnum.GAS_AMOUNT_GETTER: GasAmountGetterAdapter,
@@ -407,4 +456,7 @@ ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
     ValidationMethodEnum.DESCRIPTION: DescriptionValidationAdapter,
     ValidationMethodEnum.ALL_SUPPLY_TYPES_GETTER: AllSupplyTypesGetterAdapter,
     ValidationMethodEnum.CMC_VOLUME24H_GETTER: CMCVolume24hGetterAdapter,
+    ValidationMethodEnum.DECIMALS_GETTER: DecimalsGetterAdapter,
+    ValidationMethodEnum.NAME_GETTER: NameGetterAdapter,
+    ValidationMethodEnum.DESCRIPTION_GETTER: DescriptionGetterAdapter,
 }

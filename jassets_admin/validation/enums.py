@@ -27,8 +27,11 @@ class ValidationMethodEnum(Enum):
     SYMBOL_AND_ADDRESS = 'symbol_and_address'
     CONTRACT_METHODS = 'contract_methods'
     DECIMALS = 'decimals'
+    DECIMALS_GETTER = 'decimals_getter'
     NAME = 'name'
+    NAME_GETTER = 'name_getter'
     DESCRIPTION = 'description'
+    DESCRIPTION_GETTER = 'description_getter'
     CMC_VOLUME24H_GETTER = 'cmc_volume24h_getter'
 
 
@@ -38,6 +41,9 @@ VALIDATION_METHOD_ACTION_NAME = {
         'Fill max supply, total supply, circulating supply'),
     ValidationMethodEnum.CMC_VOLUME24H_GETTER: 'Fill cmc_volume24h property',
     ValidationMethodEnum.GAS_AMOUNT_GETTER: 'Fill gas amount',
+    ValidationMethodEnum.DECIMALS_GETTER: 'Fill decimals',
+    ValidationMethodEnum.NAME_GETTER: 'Fill name',
+    ValidationMethodEnum.DESCRIPTION_GETTER: 'Fill description',
     ValidationMethodEnum.GAS_AMOUNT: 'Validate gas amount',
     ValidationMethodEnum.TOTAL_SUPPLY: 'Validate total supply',
     ValidationMethodEnum.MAX_SUPPLY: 'Validate max supply',
