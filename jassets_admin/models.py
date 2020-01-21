@@ -1,3 +1,5 @@
+import uuid
+
 from datetime import datetime, timezone
 
 from django.contrib.postgres.fields import JSONField
@@ -71,6 +73,8 @@ class Asset(BaseAsset):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
+        if self.uuid is None:
+            self.uuid = uuid.uuid4()
         self.updated = datetime.now(tz=timezone.utc)
         super().save(force_insert, force_update, using, update_fields)
 

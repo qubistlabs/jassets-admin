@@ -87,6 +87,9 @@ class AssetAdmin(BaseModelAdmin):
         'created',
         'updated',
     )
+    exclude = (
+        'uuid',
+    )
 
     actions = [collect_links] + get_validation_actions()
 
