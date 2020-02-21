@@ -62,6 +62,20 @@ class AssetValidationAdapter(ABC):
         """ Make changes in asset and if asset need to be saved return True """
         return False
 
+    def _modify_asset_property(self, key, value) -> bool:
+        """ Assign value to asset properties dict and if asset need to be saved return True """
+        if value is None:
+            return False
+
+        need_to_save = False
+        if self.asset.properties is None:
+            self.asset.properties = {}
+            need_to_save = True
+        if self.asset.properties.get(key) != value:
+            self.asset.properties[key] = value
+            need_to_save = True
+        return need_to_save
+
 
 class GasAmountAssetValidationAdapter(AssetValidationAdapter):
     @staticmethod
@@ -197,8 +211,7 @@ class TransfersStartedTimestampGetterAdapter(AssetValidationAdapter):
         ]
 
     def modify_asset(self, result, message) -> bool:
-        self.asset.properties['transfers_started_timestamp'] = result
-        return True
+        return self._modify_asset_property('transfers_started_timestamp', result)
 
 
 class LinksGetterAdapter(AssetValidationAdapter, ABC):
@@ -341,15 +354,12 @@ class AllSupplyTypesGetterAdapter(AssetValidationAdapter):
         ]
 
     def modify_asset(self, result, message) -> bool:
-        default_value = None
         if not isinstance(result, dict):
-            default_value = result
-            result = {}
-        if self.asset.properties is None:
-            self.asset.properties = {}
+            return False
+        need_to_save = False
         for attr in ('total_supply', 'max_supply', 'circulating_supply'):
-            self.asset.properties[attr] = result.get(attr, default_value)
-        return True
+            need_to_save |= self._modify_asset_property(attr, result.get(attr))
+        return need_to_save
 
 
 class GasAmountGetterAdapter(AssetValidationAdapter):
@@ -365,10 +375,7 @@ class GasAmountGetterAdapter(AssetValidationAdapter):
         ]
 
     def modify_asset(self, result, message) -> bool:
-        if self.asset.properties is None:
-            self.asset.properties = {}
-        self.asset.properties['static_gas_amount'] = result
-        return True
+        return self._modify_asset_property('static_gas_amount', result)
 
 
 class CMCVolume24hGetterAdapter(AssetValidationAdapter):
@@ -382,10 +389,7 @@ class CMCVolume24hGetterAdapter(AssetValidationAdapter):
         ]
 
     def modify_asset(self, result, message) -> bool:
-        if self.asset.properties is None:
-            self.asset.properties = {}
-        self.asset.properties['cmc_volume24h'] = result
-        return True
+        return self._modify_asset_property('cmc_volume24h', result)
 
 
 class DecimalsGetterAdapter(AssetValidationAdapter):
@@ -400,10 +404,7 @@ class DecimalsGetterAdapter(AssetValidationAdapter):
         ]
 
     def modify_asset(self, result, message) -> bool:
-        if self.asset.properties is None:
-            self.asset.properties = {}
-        self.asset.properties['decimals'] = result
-        return True
+        return self._modify_asset_property('decimals', result)
 
 
 class NameGetterAdapter(AssetValidationAdapter):
@@ -417,8 +418,10 @@ class NameGetterAdapter(AssetValidationAdapter):
         ]
 
     def modify_asset(self, result, message) -> bool:
-        self.asset.name = result
-        return True
+        if self.asset.name != result:
+            self.asset.name = result
+            return True
+        return False
 
 
 class DescriptionGetterAdapter(AssetValidationAdapter):
@@ -432,8 +435,10 @@ class DescriptionGetterAdapter(AssetValidationAdapter):
         ]
 
     def modify_asset(self, result, message) -> bool:
-        self.asset.description = result
-        return True
+        if self.asset.description != result:
+            self.asset.description = result
+            return True
+        return False
 
 
 ADAPTER_MAP: Dict[ValidationMethodEnum, Type[AssetValidationAdapter]] = {
