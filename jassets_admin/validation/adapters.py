@@ -70,7 +70,6 @@ class AssetValidationAdapter(ABC):
         need_to_save = False
         if self.asset.properties is None:
             self.asset.properties = {}
-            need_to_save = True
         if self.asset.properties.get(key) != value:
             self.asset.properties[key] = value
             need_to_save = True
