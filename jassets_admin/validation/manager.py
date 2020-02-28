@@ -7,10 +7,10 @@ from uuid import uuid4
 
 from ..log_tools import LogSpeaker, Speaker
 
-from .adapters import ADAPTER_MAP
-from .enums import TaskState, ValidationMethodEnum, ValidatorErrors
-from .models import ValidationQueue
-
+from jassets_admin.validation.adapters import ADAPTER_MAP
+from jassets_admin.validation.enums import TaskState, ValidationMethodEnum, ValidatorErrors
+from jassets_admin.validation.models import ValidationQueue, AssetHistory
+from jassets_admin.models import Asset
 
 ADD_TASK_URL = f'http://{settings.VALIDATOR_HOST}:{settings.VALIDATOR_PORT}/task/add'
 GET_TASK_URL = f'http://{settings.VALIDATOR_HOST}:{settings.VALIDATOR_PORT}/task/get'
@@ -26,11 +26,13 @@ class ValidationManager:
         """ Set logging mechanism """
         self._speaker = speaker
 
-    def validate(self, validation_method, asset, *args, **kwargs):
+    def validate(self, validation_method, asset, user=None, *args, **kwargs):
         """ Send asset to validation """
         task_id = str(uuid4())
         ValidationQueue.add(task_id, asset.uuid, validation_method)
-        response_data = self._send_to_validation(validation_method, asset, task_id, *args, **kwargs)
+        response_data = self._send_to_validation(
+            validation_method, asset, task_id, user, *args, **kwargs,
+        )
         if response_data:
             if response_data['state'] == TaskState.queued.value:
                 self._speaker.info('Process started')
@@ -38,6 +40,29 @@ class ValidationManager:
                 self._speaker.warning(
                     f'Process can`t be done. Validator returned this: {response_data["result"]}'
                 )
+
+    def approval(self, history_entry, is_approved):
+        """ Apply or discard asset changes after approval """
+        if history_entry.state == AssetHistory.APPLIED:
+            self._speaker.warning('Changes are already applied')
+        elif history_entry.state == AssetHistory.DISCARDED:
+            self._speaker.warning('Changes are already discarded')
+        elif history_entry.state == AssetHistory.DRAFT:
+            self._speaker.warning(
+                f'Changes you want to {"apply" if is_approved else "discard"} are not arrived yet',
+            )
+        elif history_entry.state == AssetHistory.PENDING:
+            adapter_cls = ADAPTER_MAP[ValidationMethodEnum(history_entry.validation_method)]
+            if adapter_cls.need_approval is False:
+                self._speaker.error('This validator does not imply result approval')
+            try:
+                asset = Asset.objects.get(uuid=history_entry.uuid)
+            except Asset.DoesNotExist:
+                self._speaker.error(f'Asset with uuid = {history_entry.uuid} not found')
+            else:
+                adapter = adapter_cls(asset)
+                adapter.result_approval(history_entry, is_approved)
+                self._speaker.info('Approved' if is_approved else 'Discarded')
 
     def process_results(self):
         """ Process validation results for all assets in queue """
@@ -71,7 +96,7 @@ class ValidationManager:
                     message = ''
                 done_task_uuids.append(item.task_uuid)
                 adapter = ADAPTER_MAP[ValidationMethodEnum(item.method)](asset_dict[item.asset_uuid])
-                adapter.store_result(result, message, state)
+                adapter.store_result(item.task_uuid, result, message, state)
                 self._speaker.info(f'Asset {item.asset_uuid} result: {result}')
         ValidationQueue.remove(done_task_uuids)
 
@@ -105,11 +130,13 @@ class ValidationManager:
             validation_method,
             asset,
             task_id,
+            user,
             *args,
             **kwargs
     ) -> Optional[Dict[str, Any]]:
         self._check_settings()
         adapter = ADAPTER_MAP[validation_method](asset, *args, **kwargs)
+        adapter.create_history_entry(task_id, user)
         data = {
             'args': adapter.get_data(),
             'id': task_id,

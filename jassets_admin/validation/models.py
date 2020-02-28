@@ -8,21 +8,35 @@ from ..models import BaseAsset, Asset
 
 
 class AssetHistory(BaseAsset):
+    DRAFT = 'draft'
+    PENDING = 'pending'
+    APPLIED = 'applied'
+    DISCARDED = 'discarded'
+    STATE_CHOICES = (
+        (DRAFT, 'Draft'),
+        (PENDING, 'Pending'),
+        (APPLIED, 'Applied'),
+        (DISCARDED, 'Discarded'),
+    )
+
     uuid = models.UUIDField()
     symbol = models.CharField(max_length=30)
     address = models.CharField(max_length=42, null=True)
     platform = models.UUIDField(null=True, blank=True)
     properties = models.TextField(null=True, blank=True)
 
-    is_valid = models.BooleanField(verbose_name='Overall validation result')
+    is_valid = models.BooleanField(verbose_name='Overall validation result', null=True)
     validation_results = models.TextField(null=True, blank=True)
-    validation_time = models.DateTimeField(verbose_name='What time did the result come')
+    validation_time = models.DateTimeField(verbose_name='What time did the result come', null=True)
     result_message = models.TextField(
         blank=True, null=True, verbose_name='Error or information message from validator')
     user = models.ForeignKey(
         "auth.User", verbose_name='Who requested validation',
         on_delete=models.SET_NULL, null=True, blank=True,
     )
+    validation_method = models.CharField(max_length=100, null=True)
+    task_uuid = models.UUIDField(null=True)
+    state = models.CharField(choices=STATE_CHOICES, max_length=100, default=APPLIED)
 
     @property
     def validation_results_dict(self):
@@ -34,7 +48,10 @@ class AssetHistory(BaseAsset):
 
     @classmethod
     def get_last(cls, asset: Asset) -> Optional['AssetHistory']:
-        return cls.objects.filter(uuid=asset.uuid).order_by('validation_time').last()
+        return cls.objects.filter(
+            uuid=asset.uuid,
+            state__in=(cls.APPLIED, cls.DISCARDED),
+        ).order_by('validation_time').last()
 
     @classmethod
     def from_asset(cls, asset: Asset) -> 'AssetHistory':
@@ -50,6 +67,7 @@ class AssetHistory(BaseAsset):
             'updated': asset.updated,
             'platform': asset.platform_obj_id,
             'properties': asset.properties,
+            'state': AssetHistory.DRAFT,
         }
         result = AssetHistory(**values)
         return result

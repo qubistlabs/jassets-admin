@@ -17,6 +17,8 @@ from .models import AssetHistory
 
 class AssetValidationAdapter(ABC):
 
+    need_approval = False
+
     def __init__(self, asset, *args, **kwargs):
         self.asset = asset
         self.properties = asset_properties_to_dict(asset)
@@ -32,35 +34,78 @@ class AssetValidationAdapter(ABC):
     def get_data(self):
         """ Get data for validation service """
 
-    def store_result(self, result, message, state):
+    def store_result(self, task_uuid, result, message, task_state):
         """ Save result from validation service """
-        self._create_history_entry(result, message)
-        if state == TaskState.done:
+        self._update_history_entry(task_uuid, result, message)
+        if not self.need_approval and task_state == TaskState.done:
             is_modified = self.modify_asset(result, message)
             if is_modified:
                 self.asset.save()
 
-    def _create_history_entry(self, result, message):
-        last_history_item = AssetHistory.get_last(self.asset)
-        validation_results = last_history_item.validation_results_dict if last_history_item else {}
+    def result_approval(self, history_entry, is_approved):
+        """ Must be invoked when getter needs additional approval to perform modify_asset """
+        assert self.need_approval
+        if is_approved:
+            result = self.get_result_from_validation_results_dict(
+                history_entry.validation_results_dict
+            )
+            is_modified = self.modify_asset(result, history_entry.result_message)
+            if is_modified:
+                self.asset.save()
+            history_entry.state = AssetHistory.APPLIED
+        else:
+            history_entry.state = AssetHistory.DISCARDED
+        history_entry.save()
+
+    def create_history_entry(self, task_uuid, user):
         history_entry = AssetHistory.from_asset(self.asset)
+        history_entry.user = user
+        history_entry.task_uuid = task_uuid
+        history_entry.validation_method = self.get_validation_method().value
+
+        last_history_item = AssetHistory.get_last(self.asset)
+        if last_history_item:
+            history_entry.validation_results = last_history_item.validation_results_dict
+        else:
+            history_entry.validation_results = {}
+        history_entry.save()
+        return history_entry
+
+    @classmethod
+    def get_result_from_validation_results_dict(cls, validation_results):
+        return validation_results.get(cls.get_validation_method().value)
+
+    def modify_asset(self, result, message) -> bool:
+        """ Make changes in asset and if asset need to be saved return True """
+        return False
+
+    def _update_history_entry(self, task_uuid, result, message):
+        try:
+            history_entry = AssetHistory.objects.get(
+                task_uuid=task_uuid,
+                state=AssetHistory.DRAFT,
+            )
+        except AssetHistory.DoesNotExist:
+            history_entry = self.create_history_entry(task_uuid, None)
         history_entry.result_message = message
+        validation_results = history_entry.validation_results_dict
+
         history_entry.validation_time = datetime.now(tz=timezone.utc)
-        self.modify_validation_results_dict(validation_results, result)
+        self._modify_validation_results_dict(validation_results, result)
         history_entry.is_valid = all(
             v is True for k, v in validation_results.items()
             if ValidationMethodEnum(k) in VALIDATION_METHODS_FOR_STATUS
         )
         history_entry.validation_results = json.dumps(validation_results)
+        if self.need_approval:
+            history_entry.state = AssetHistory.PENDING
+        else:
+            history_entry.state = AssetHistory.APPLIED
         history_entry.save()
         return history_entry
 
-    def modify_validation_results_dict(self, validation_results, result):
+    def _modify_validation_results_dict(self, validation_results, result):
         validation_results[self.get_validation_method().value] = result
-
-    def modify_asset(self, result, message) -> bool:
-        """ Make changes in asset and if asset need to be saved return True """
-        return False
 
     def _modify_asset_property(self, key, value) -> bool:
         """ Assign value to asset properties dict and if asset need to be saved return True """
@@ -129,6 +174,12 @@ class CirculatingSupplyAssetValidationAdapter(AssetValidationAdapter):
 
 
 class AllSupplyTypesAssetValidationAdapter(AssetValidationAdapter):
+    real_validation_methods = (
+        ValidationMethodEnum.TOTAL_SUPPLY,
+        ValidationMethodEnum.MAX_SUPPLY,
+        ValidationMethodEnum.CIRCULATING_SUPPLY,
+    )
+
     @staticmethod
     def get_validation_method():
         return ValidationMethodEnum.ALL_SUPPLY_TYPES
@@ -141,16 +192,16 @@ class AllSupplyTypesAssetValidationAdapter(AssetValidationAdapter):
             self.properties.get('circulating_supply'),
         ]
 
-    def modify_validation_results_dict(self, validation_results, results):
+    def _modify_validation_results_dict(self, validation_results, results):
         if not isinstance(results, list):
             results = [results] * 3
-        methods = (
-            ValidationMethodEnum.TOTAL_SUPPLY,
-            ValidationMethodEnum.MAX_SUPPLY,
-            ValidationMethodEnum.CIRCULATING_SUPPLY,
-        )
-        for result, method in zip(results, methods):
+
+        for result, method in zip(results, self.real_validation_methods):
             validation_results[method.value] = result
+
+    @classmethod
+    def get_result_from_validation_results_dict(cls, validation_results):
+        return tuple(validation_results.get(vm.value) for vm in cls.real_validation_methods)
 
 
 class DeploymentBlockValidationAdapter(AssetValidationAdapter):
@@ -362,6 +413,9 @@ class AllSupplyTypesGetterAdapter(AssetValidationAdapter):
 
 
 class GasAmountGetterAdapter(AssetValidationAdapter):
+
+    need_approval = True
+
     @staticmethod
     def get_validation_method():
         return ValidationMethodEnum.GAS_AMOUNT_GETTER
