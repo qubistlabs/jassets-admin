@@ -23,7 +23,11 @@ class ValidationAction:
         log_wrapper = LogWrapper(request)
         for asset in queryset:
             with log_wrapper:
-                manager.validate(self.validation_method, asset)
+                manager.validate(
+                    validation_method=self.validation_method,
+                    asset=asset,
+                    user=request.user,
+                )
 
 
 def get_validation_actions():
@@ -56,7 +60,12 @@ def collect_links(modeladmin, request, queryset):
                     method = ASSET_LINK_SOURCE_TO_METHOD[
                         AssetLinkSource(form.cleaned_data['source'])
                     ]
-                    manager.validate(method, asset, *form.cleaned_data['asset_link_types'])
+                    manager.validate(
+                        validation_method=method,
+                        asset=asset,
+                        user=request.user,
+                        *form.cleaned_data['asset_link_types'],
+                    )
             return HttpResponseRedirect(request.get_full_path())
 
     if not form:
@@ -68,3 +77,20 @@ def collect_links(modeladmin, request, queryset):
         'collect_links.html',
         {'items': queryset, 'form': form, 'title': 'Action settings'},
     )
+
+
+def approve_or_discard(modeladmin, request, queryset, is_approved):
+    manager = ValidationManager()
+    manager.set_speaker(ExceptionSpeaker)
+    log_wrapper = LogWrapper(request)
+    for history_entry in queryset:
+        with log_wrapper:
+            manager.approval(history_entry, is_approved)
+
+
+def apply_changes(modeladmin, request, queryset):
+    approve_or_discard(modeladmin, request, queryset, True)
+
+
+def discard_changes(modeladmin, request, queryset):
+    approve_or_discard(modeladmin, request, queryset, False)
